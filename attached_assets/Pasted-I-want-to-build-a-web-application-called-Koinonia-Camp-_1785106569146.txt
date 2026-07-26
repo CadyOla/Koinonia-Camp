@@ -1,0 +1,46 @@
+I want to build a web application called Koinonia Camp Registration. This is Phase 1 of a larger system — build only what’s described below, but structure the database so it can support more features later (accommodation details, payments, food selection, room/bus allocation, login) without needing a redesign.
+
+Scope for this phase:
+
+A public registration form and a simple admin view. No login/authentication yet.
+
+Identifier logic:
+The combination of Phone Number + Full Name is the unique identifier for a registration. If someone submits the same phone number and name again, treat it as an update to their existing registration rather than creating a duplicate. Phone number alone should NOT be unique, since family members may share a phone.
+
+Registration form fields:
+
+	•	Full Name
+	•	Phone Number
+	•	Email (optional)
+	•	Gender
+	•	Branch
+	•	Ministry (multi-select)
+	•	Emergency Contact Name
+	•	Emergency Contact Number
+	•	Accommodation Preference: Resident / Non-Resident
+	•	If Resident — Room Type Preference: Single / Double / Four Sharing
+	•	Feeding Preference: Church Feeding / Self Feeding
+	•	Transport Preference: Church Bus / Self Transport
+
+On submit, show a confirmation screen with a reference number and a friendly success message.
+
+Admin view (no login required for now, just a private URL):
+
+	•	Table of all registrations, searchable and filterable by branch, accommodation type, feeding, transport
+	•	Live summary counts at the top: Total Registered, Resident vs Non-Resident, Church Feeding vs Self Feeding, Church Bus vs Self Transport
+	•	Export to Excel button
+
+Technology: React frontend, Node/Express backend, PostgreSQL. Design the database schema with a registrations table that has room for future fields (payment status, room assignment, bus assignment, food selection, auth) even though we won’t build those UIs yet.
+
+Design — this matters a lot:
+Make this feel warm, modern and engaging, not like a generic government form. Think:
+
+	•	A welcoming header with the camp name and a short tagline (e.g. “Koinonia Camp 2026 — Register in 2 minutes”)
+	•	Soft rounded cards, generous spacing, a clean sans-serif font
+	•	A subtle accent color (not default blue) — something that feels like it belongs to a church community event, warm and inviting
+	•	Progress indication if the form is broken into steps (e.g. “Step 1 of 3: Personal Info”)
+	•	Micro-interactions: a satisfying checkmark/success animation on the confirmation screen, gentle hover states on buttons
+	•	Mobile-first — this must look great on a phone, since most members will register from one
+	•	The admin dashboard should look like a clean, modern analytics view (think Stripe/Linear dashboard aesthetic) — clear number cards, not a raw spreadsheet-looking table
+
+Do not build authentication, payments, room allocation, or food menus in this phase. Just registration + admin dashboard, done really well visually.

@@ -1,0 +1,27 @@
+kind = "web"
+previewPath = "/"
+title = "Koinonia Camp Registration"
+version = "1.0.0"
+id = "artifacts/koinonia-camp"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 20657
+
+[services.development]
+run = "pnpm --filter @workspace/koinonia-camp run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/koinonia-camp", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/koinonia-camp/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "20657"
+BASE_PATH = "/"

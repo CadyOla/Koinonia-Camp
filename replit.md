@@ -1,10 +1,11 @@
-# [Project name]
+# Koinonia Camp Registration
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+A warm, modern camp registration app for Gracefields Chapel's Koinonia Camp 2026 (Sept 18–21, "Prepare to meet thy God"). Members register via a public multi-step form; organisers manage attendees via a private admin dashboard.
 
 ## Run & Operate
 
-- `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000)
+- `pnpm --filter @workspace/api-server run dev` — run the API server (port 8080)
+- `pnpm --filter @workspace/koinonia-camp run dev` — run the frontend (managed via workflow)
 - `pnpm run typecheck` — full typecheck across all packages
 - `pnpm run build` — typecheck + build all packages
 - `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
@@ -14,6 +15,7 @@ _Replace the heading above with the project's name, and this line with one sente
 ## Stack
 
 - pnpm workspaces, Node.js 24, TypeScript 5.9
+- Frontend: React + Vite, Tailwind CSS, React Query, Wouter
 - API: Express 5
 - DB: PostgreSQL + Drizzle ORM
 - Validation: Zod (`zod/v4`), `drizzle-zod`
@@ -22,15 +24,23 @@ _Replace the heading above with the project's name, and this line with one sente
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `lib/api-spec/openapi.yaml` — API contract (source of truth)
+- `lib/db/src/schema/registrations.ts` — registrations table definition
+- `artifacts/api-server/src/routes/registrations.ts` — all registration endpoints
+- `artifacts/koinonia-camp/src/` — React frontend
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- Phone + full name (case-insensitive) is the unique identifier for upsert — phone alone is NOT unique (family members share phones)
+- Ministries stored as comma-separated text column (not pg array) for simplicity; converted to/from array in the API layer
+- Reference number format: `KOI26-XXXXXX` (6 random digits)
+- Future fields (paymentStatus, roomAssignment, busAssignment) are in the DB schema now but not exposed in Phase 1 UI
+- Admin dashboard is at `/admin` — no authentication in Phase 1
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+- `/` — Public 3-step registration form (Personal Info → Church Info → Preferences) with animated confirmation screen and reference number
+- `/admin` — Admin dashboard with live stats cards, searchable/filterable table of all registrants, and Excel export
 
 ## User preferences
 
@@ -38,8 +48,6 @@ _Populate as you build — explicit user instructions worth remembering across s
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
-
-## Pointers
-
-- See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and package details
+- After any `lib/*` schema change, run `pnpm run typecheck:libs` before checking artifact packages — stale lib declarations cause false import errors
+- After any OpenAPI spec change, re-run codegen before writing routes or frontend code
+- The stats endpoint (`/registrations/stats`) must be registered BEFORE `/:id` in Express to avoid route conflicts
