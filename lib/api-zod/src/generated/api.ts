@@ -41,6 +41,7 @@ export const ListRegistrationsResponseItem = zod.object({
   "emergencyContactNumber": zod.string(),
   "accommodationPreference": zod.string(),
   "roomTypePreference": zod.string().nullish(),
+  "roommatePreferences": zod.string().nullish(),
   "feedingPreference": zod.string(),
   "transportPreference": zod.string(),
   "paymentStatus": zod.string().nullish(),
@@ -73,6 +74,7 @@ export const SubmitRegistrationBody = zod.object({
   "emergencyContactNumber": zod.string().min(1),
   "accommodationPreference": zod.string(),
   "roomTypePreference": zod.string().optional(),
+  "roommatePreferences": zod.string().optional(),
   "feedingPreference": zod.string(),
   "transportPreference": zod.string()
 })
@@ -90,6 +92,7 @@ export const SubmitRegistrationResponse = zod.object({
   "emergencyContactNumber": zod.string(),
   "accommodationPreference": zod.string(),
   "roomTypePreference": zod.string().nullish(),
+  "roommatePreferences": zod.string().nullish(),
   "feedingPreference": zod.string(),
   "transportPreference": zod.string(),
   "paymentStatus": zod.string().nullish(),
@@ -142,6 +145,7 @@ export const GetRegistrationResponse = zod.object({
   "emergencyContactNumber": zod.string(),
   "accommodationPreference": zod.string(),
   "roomTypePreference": zod.string().nullish(),
+  "roommatePreferences": zod.string().nullish(),
   "feedingPreference": zod.string(),
   "transportPreference": zod.string(),
   "paymentStatus": zod.string().nullish(),

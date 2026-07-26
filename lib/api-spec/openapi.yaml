@@ -180,6 +180,8 @@ components:
           type: string
         roomTypePreference:
           type: ["string", "null"]
+        roommatePreferences:
+          type: ["string", "null"]
         feedingPreference:
           type: string
         transportPreference:
@@ -234,6 +236,8 @@ components:
         accommodationPreference:
           type: string
         roomTypePreference:
+          type: string
+        roommatePreferences:
           type: string
         feedingPreference:
           type: string

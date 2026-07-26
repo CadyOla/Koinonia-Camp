@@ -111,6 +111,7 @@ router.post("/registrations", async (req, res): Promise<void> => {
         emergencyContactNumber: data.emergencyContactNumber,
         accommodationPreference: data.accommodationPreference,
         roomTypePreference: data.roomTypePreference ?? null,
+        roommatePreferences: data.roommatePreferences ?? null,
         feedingPreference: data.feedingPreference,
         transportPreference: data.transportPreference,
         updatedAt: new Date(),
@@ -135,6 +136,7 @@ router.post("/registrations", async (req, res): Promise<void> => {
         emergencyContactNumber: data.emergencyContactNumber,
         accommodationPreference: data.accommodationPreference,
         roomTypePreference: data.roomTypePreference ?? null,
+        roommatePreferences: data.roommatePreferences ?? null,
         feedingPreference: data.feedingPreference,
         transportPreference: data.transportPreference,
       })

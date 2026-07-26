@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useSubmitRegistration, RegistrationInput } from "@workspace/api-client-react";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -36,6 +37,7 @@ const registrationSchema = z.object({
   emergencyContactNumber: z.string().min(9, "Emergency contact number required"),
   accommodationPreference: z.enum(["Resident", "Non-Resident"], { required_error: "Select accommodation preference" }),
   roomTypePreference: z.string().optional(),
+  roommatePreferences: z.string().optional(),
   feedingPreference: z.enum(["Church Feeding", "Self Feeding"], { required_error: "Select feeding preference" }),
   transportPreference: z.enum(["Church Bus", "Self Transport"], { required_error: "Select transport preference" }),
 }).superRefine((data, ctx) => {
@@ -70,6 +72,7 @@ export default function Registration() {
       emergencyContactNumber: "",
       accommodationPreference: undefined,
       roomTypePreference: "",
+      roommatePreferences: "",
       feedingPreference: undefined,
       transportPreference: undefined,
     },
@@ -108,6 +111,7 @@ export default function Registration() {
       emergencyContactNumber: data.emergencyContactNumber,
       accommodationPreference: data.accommodationPreference,
       roomTypePreference: data.roomTypePreference || undefined,
+      roommatePreferences: data.roommatePreferences || undefined,
       feedingPreference: data.feedingPreference,
       transportPreference: data.transportPreference,
     };
@@ -469,7 +473,7 @@ export default function Registration() {
                   />
 
                   {isResident && (
-                    <div className="animate-in slide-in-from-top-2 fade-in duration-200 pl-4 border-l-2 border-secondary/30 ml-2">
+                    <div className="animate-in slide-in-from-top-2 fade-in duration-200 pl-4 border-l-2 border-secondary/30 ml-2 space-y-5">
                       <FormField
                         control={form.control}
                         name="roomTypePreference"
@@ -496,6 +500,29 @@ export default function Registration() {
                           </FormItem>
                         )}
                       />
+
+                      {(form.watch("roomTypePreference") === "Double" || form.watch("roomTypePreference") === "Four Sharing") && (
+                        <div className="animate-in slide-in-from-top-2 fade-in duration-200">
+                          <FormField
+                            control={form.control}
+                            name="roommatePreferences"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-sm font-medium">Preferred Roommates <span className="text-muted-foreground font-normal">(Optional)</span></FormLabel>
+                                <p className="text-xs text-muted-foreground -mt-1">Enter the names of people you'd like to share a room with, one per line.</p>
+                                <FormControl>
+                                  <Textarea
+                                    placeholder={"e.g.\nAkosua Mensah\nKofi Asante"}
+                                    className="bg-white resize-none min-h-[90px]"
+                                    {...field}
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                      )}
                     </div>
                   )}
 
