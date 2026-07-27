@@ -16,6 +16,7 @@ export const registrationsTable = pgTable("registrations", {
   emergencyContactNumber: text("emergency_contact_number").notNull(),
   accommodationPreference: text("accommodation_preference").notNull(),
   roomTypePreference: text("room_type_preference"),
+  lodgingType: text("lodging_type"),
   roommatePreferences: text("roommate_preferences"),
   specialNeeds: text("special_needs"),
   feedingPreference: text("feeding_preference").notNull(),

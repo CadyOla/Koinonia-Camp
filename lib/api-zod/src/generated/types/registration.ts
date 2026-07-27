@@ -22,6 +22,8 @@ export interface Registration {
   /** @nullable */
   roomTypePreference?: string | null;
   /** @nullable */
+  lodgingType?: string | null;
+  /** @nullable */
   roommatePreferences?: string | null;
   /** @nullable */
   specialNeeds?: string | null;

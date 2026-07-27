@@ -25,6 +25,8 @@ export interface Registration {
   /** @nullable */
   roomTypePreference?: string | null;
   /** @nullable */
+  lodgingType?: string | null;
+  /** @nullable */
   roommatePreferences?: string | null;
   /** @nullable */
   specialNeeds?: string | null;
@@ -55,6 +57,7 @@ export interface RegistrationInput {
   emergencyContactNumber: string;
   accommodationPreference: string;
   roomTypePreference?: string;
+  lodgingType?: string;
   roommatePreferences?: string;
   specialNeeds?: string;
   feedingPreference: string;

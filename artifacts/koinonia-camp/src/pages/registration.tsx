@@ -42,17 +42,19 @@ const registrationSchema = z.object({
   emergencyContactNumber: z.string().min(9, "Emergency contact number required"),
   accommodationPreference: z.enum(["Resident", "Non-Resident"], { required_error: "Select accommodation preference" }),
   roomTypePreference: z.string().optional(),
+  lodgingType: z.string().optional(),
   roommatePreferences: z.string().optional(),
   specialNeeds: z.string().optional(),
   feedingPreference: z.enum(["Church Feeding", "Self Feeding"], { required_error: "Select feeding preference" }),
   transportPreference: z.enum(["Church Bus", "Self Transport"], { required_error: "Select transport preference" }),
 }).superRefine((data, ctx) => {
-  if (data.accommodationPreference === "Resident" && !data.roomTypePreference) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: "Please select an accommodation type",
-      path: ["roomTypePreference"],
-    });
+  if (data.accommodationPreference === "Resident") {
+    if (!data.roomTypePreference) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Please select a room type", path: ["roomTypePreference"] });
+    }
+    if (!data.lodgingType) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Please select a lodging type", path: ["lodgingType"] });
+    }
   }
 });
 
@@ -79,6 +81,7 @@ export default function Registration() {
       emergencyContactNumber: "",
       accommodationPreference: undefined,
       roomTypePreference: "",
+      lodgingType: "",
       roommatePreferences: "",
       specialNeeds: "",
       feedingPreference: undefined,
@@ -123,6 +126,7 @@ export default function Registration() {
       emergencyContactNumber: data.emergencyContactNumber,
       accommodationPreference: data.accommodationPreference,
       roomTypePreference: data.roomTypePreference || undefined,
+      lodgingType: data.lodgingType || undefined,
       roommatePreferences: data.roommatePreferences || undefined,
       specialNeeds: data.specialNeeds || undefined,
       feedingPreference: data.feedingPreference,
@@ -491,12 +495,65 @@ export default function Registration() {
 
                   {isResident && (
                     <div className="animate-in slide-in-from-top-2 fade-in duration-200 pl-4 border-l-2 border-secondary/30 ml-2 space-y-5">
+                      {/* Room sharing type */}
                       <FormField
                         control={form.control}
                         name="roomTypePreference"
                         render={({ field }) => (
                           <FormItem className="space-y-3">
-                            <FormLabel className="text-sm font-medium">Accommodation Type <span className="text-destructive">*</span></FormLabel>
+                            <FormLabel className="text-sm font-medium">Room Sharing <span className="text-destructive">*</span></FormLabel>
+                            <FormControl>
+                              <RadioGroup
+                                onValueChange={field.onChange}
+                                defaultValue={field.value}
+                                className="grid grid-cols-1 sm:grid-cols-3 gap-2"
+                              >
+                                {["Single", "Double", "Four Sharing"].map((type) => (
+                                  <FormItem key={type} className="flex items-center space-x-2 space-y-0 bg-white border rounded-lg p-3 cursor-pointer [&:has([data-state=checked])]:border-primary [&:has([data-state=checked])]:bg-primary/5">
+                                    <FormControl>
+                                      <RadioGroupItem value={type} />
+                                    </FormControl>
+                                    <FormLabel className="font-normal cursor-pointer text-sm w-full">{type}</FormLabel>
+                                  </FormItem>
+                                ))}
+                              </RadioGroup>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      {/* Roommate preferences — shown for shared rooms */}
+                      {(form.watch("roomTypePreference") === "Double" || form.watch("roomTypePreference") === "Four Sharing") && (
+                        <div className="animate-in slide-in-from-top-2 fade-in duration-200">
+                          <FormField
+                            control={form.control}
+                            name="roommatePreferences"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-sm font-medium">Preferred Roommates <span className="text-muted-foreground font-normal">(Optional)</span></FormLabel>
+                                <p className="text-xs text-muted-foreground -mt-1">Names of people you'd like to share a room with, one per line.</p>
+                                <FormControl>
+                                  <Textarea
+                                    placeholder={"e.g.\nAkosua Mensah\nKofi Asante"}
+                                    className="bg-white resize-none min-h-[90px]"
+                                    {...field}
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                      )}
+
+                      {/* Lodging type */}
+                      <FormField
+                        control={form.control}
+                        name="lodgingType"
+                        render={({ field }) => (
+                          <FormItem className="space-y-3">
+                            <FormLabel className="text-sm font-medium">Lodging Type <span className="text-destructive">*</span></FormLabel>
                             <FormControl>
                               <RadioGroup
                                 onValueChange={field.onChange}
@@ -517,29 +574,6 @@ export default function Registration() {
                           </FormItem>
                         )}
                       />
-
-                      {form.watch("roomTypePreference") === "Hostel" && (
-                        <div className="animate-in slide-in-from-top-2 fade-in duration-200">
-                          <FormField
-                            control={form.control}
-                            name="roommatePreferences"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-sm font-medium">Preferred Roommates <span className="text-muted-foreground font-normal">(Optional)</span></FormLabel>
-                                <p className="text-xs text-muted-foreground -mt-1">Enter the names of people you'd like to share a room with, one per line.</p>
-                                <FormControl>
-                                  <Textarea
-                                    placeholder={"e.g.\nAkosua Mensah\nKofi Asante"}
-                                    className="bg-white resize-none min-h-[90px]"
-                                    {...field}
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </div>
-                      )}
                     </div>
                   )}
 
