@@ -22,6 +22,7 @@ export interface RegistrationInput {
   accommodationPreference: string;
   roomTypePreference?: string;
   roommatePreferences?: string;
+  specialNeeds?: string;
   feedingPreference: string;
   transportPreference: string;
 }

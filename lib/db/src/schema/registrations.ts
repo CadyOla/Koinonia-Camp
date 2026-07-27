@@ -17,6 +17,7 @@ export const registrationsTable = pgTable("registrations", {
   accommodationPreference: text("accommodation_preference").notNull(),
   roomTypePreference: text("room_type_preference"),
   roommatePreferences: text("roommate_preferences"),
+  specialNeeds: text("special_needs"),
   feedingPreference: text("feeding_preference").notNull(),
   transportPreference: text("transport_preference").notNull(),
   // Future fields — not exposed in phase 1 UI

@@ -16,14 +16,19 @@ import { useToast } from "@/hooks/use-toast";
 import flyerBg from "@assets/6fbb5613-c955-4bb3-b4eb-f71d5d3d0779_1785106584113.jpeg";
 
 const BRANCHES = [
-  "Gracefields Main", "Dome", "Haatso", "Adenta", "Spintex", 
-  "Tema", "Kumasi", "Takoradi", "Sunyani", "Other"
+  "Accra Main (Okponglo)",
+  "Tema",
+  "Campus Church (Legon)",
 ];
 
 const MINISTRIES = [
-  "Worship Team", "Ushering", "Media & Tech", "Prayer Team", 
-  "Children's Ministry", "Youth Ministry", "Evangelism", 
-  "Drama & Arts", "Administration", "Hospitality", "None / Not in a ministry"
+  "Prayer",
+  "Media and Communication",
+  "Sherfields",
+  "Outreach",
+  "Music",
+  "Gold Club",
+  "Other",
 ];
 
 const registrationSchema = z.object({
@@ -38,13 +43,14 @@ const registrationSchema = z.object({
   accommodationPreference: z.enum(["Resident", "Non-Resident"], { required_error: "Select accommodation preference" }),
   roomTypePreference: z.string().optional(),
   roommatePreferences: z.string().optional(),
+  specialNeeds: z.string().optional(),
   feedingPreference: z.enum(["Church Feeding", "Self Feeding"], { required_error: "Select feeding preference" }),
   transportPreference: z.enum(["Church Bus", "Self Transport"], { required_error: "Select transport preference" }),
 }).superRefine((data, ctx) => {
   if (data.accommodationPreference === "Resident" && !data.roomTypePreference) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
-      message: "Please select a room type",
+      message: "Please select an accommodation type",
       path: ["roomTypePreference"],
     });
   }
@@ -55,6 +61,7 @@ type RegistrationFormValues = z.infer<typeof registrationSchema>;
 export default function Registration() {
   const [step, setStep] = useState(1);
   const [referenceNumber, setReferenceNumber] = useState<string | null>(null);
+  const [otherMinistryText, setOtherMinistryText] = useState("");
   const { toast } = useToast();
   
   const submitRegistration = useSubmitRegistration();
@@ -73,6 +80,7 @@ export default function Registration() {
       accommodationPreference: undefined,
       roomTypePreference: "",
       roommatePreferences: "",
+      specialNeeds: "",
       feedingPreference: undefined,
       transportPreference: undefined,
     },
@@ -100,18 +108,23 @@ export default function Registration() {
   };
 
   const onSubmit = (data: RegistrationFormValues) => {
+    // If "Other" ministry selected and text provided, substitute the free-text label
+    const resolvedMinistries = data.ministries.map((m) =>
+      m === "Other" && otherMinistryText.trim() ? `Other: ${otherMinistryText.trim()}` : m,
+    );
     const payload: RegistrationInput = {
       fullName: data.fullName,
       phoneNumber: data.phoneNumber,
       email: data.email || undefined,
       gender: data.gender,
       branch: data.branch,
-      ministries: data.ministries,
+      ministries: resolvedMinistries,
       emergencyContactName: data.emergencyContactName,
       emergencyContactNumber: data.emergencyContactNumber,
       accommodationPreference: data.accommodationPreference,
       roomTypePreference: data.roomTypePreference || undefined,
       roommatePreferences: data.roommatePreferences || undefined,
+      specialNeeds: data.specialNeeds || undefined,
       feedingPreference: data.feedingPreference,
       transportPreference: data.transportPreference,
     };
@@ -347,41 +360,45 @@ export default function Registration() {
                           <FormLabel>Ministries <span className="text-destructive">*</span></FormLabel>
                           <p className="text-sm text-muted-foreground mt-1">Select all that apply</p>
                         </div>
-                        <div className="grid grid-cols-1 gap-2 max-h-[220px] overflow-y-auto pr-2 custom-scrollbar">
+                        <div className="grid grid-cols-1 gap-2 pr-2">
                           {MINISTRIES.map((item) => (
                             <FormField
                               key={item}
                               control={form.control}
                               name="ministries"
-                              render={({ field }) => {
-                                return (
-                                  <FormItem
-                                    key={item}
-                                    className="flex flex-row items-start space-x-3 space-y-0 bg-white border rounded-lg p-3 cursor-pointer [&:has([data-state=checked])]:border-primary"
-                                  >
-                                    <FormControl>
-                                      <Checkbox
-                                        checked={field.value?.includes(item)}
-                                        onCheckedChange={(checked) => {
-                                          return checked
-                                            ? field.onChange([...field.value, item])
-                                            : field.onChange(
-                                                field.value?.filter(
-                                                  (value) => value !== item
-                                                )
-                                              )
-                                        }}
-                                      />
-                                    </FormControl>
-                                    <FormLabel className="font-normal cursor-pointer w-full text-sm">
-                                      {item}
-                                    </FormLabel>
-                                  </FormItem>
-                                )
-                              }}
+                              render={({ field }) => (
+                                <FormItem
+                                  key={item}
+                                  className="flex flex-row items-start space-x-3 space-y-0 bg-white border rounded-lg p-3 cursor-pointer [&:has([data-state=checked])]:border-primary"
+                                >
+                                  <FormControl>
+                                    <Checkbox
+                                      checked={field.value?.includes(item)}
+                                      onCheckedChange={(checked) => {
+                                        return checked
+                                          ? field.onChange([...field.value, item])
+                                          : field.onChange(field.value?.filter((v) => v !== item));
+                                      }}
+                                    />
+                                  </FormControl>
+                                  <FormLabel className="font-normal cursor-pointer w-full text-sm">
+                                    {item}
+                                  </FormLabel>
+                                </FormItem>
+                              )}
                             />
                           ))}
                         </div>
+                        {form.watch("ministries")?.includes("Other") && (
+                          <div className="animate-in slide-in-from-top-2 fade-in duration-200 mt-2">
+                            <Input
+                              placeholder="Please specify your ministry..."
+                              className="h-11 bg-white"
+                              value={otherMinistryText}
+                              onChange={(e) => setOtherMinistryText(e.target.value)}
+                            />
+                          </div>
+                        )}
                         <FormMessage />
                       </FormItem>
                     )}
@@ -479,14 +496,14 @@ export default function Registration() {
                         name="roomTypePreference"
                         render={({ field }) => (
                           <FormItem className="space-y-3">
-                            <FormLabel className="text-sm font-medium">Room Type <span className="text-destructive">*</span></FormLabel>
+                            <FormLabel className="text-sm font-medium">Accommodation Type <span className="text-destructive">*</span></FormLabel>
                             <FormControl>
                               <RadioGroup
                                 onValueChange={field.onChange}
                                 defaultValue={field.value}
                                 className="grid grid-cols-1 sm:grid-cols-3 gap-2"
                               >
-                                {["Single", "Double", "Four Sharing"].map((type) => (
+                                {["Airbnb", "Hostel", "Hotel"].map((type) => (
                                   <FormItem key={type} className="flex items-center space-x-2 space-y-0 bg-white border rounded-lg p-3 cursor-pointer [&:has([data-state=checked])]:border-primary [&:has([data-state=checked])]:bg-primary/5">
                                     <FormControl>
                                       <RadioGroupItem value={type} />
@@ -501,7 +518,7 @@ export default function Registration() {
                         )}
                       />
 
-                      {(form.watch("roomTypePreference") === "Double" || form.watch("roomTypePreference") === "Four Sharing") && (
+                      {form.watch("roomTypePreference") === "Hostel" && (
                         <div className="animate-in slide-in-from-top-2 fade-in duration-200">
                           <FormField
                             control={form.control}
@@ -588,6 +605,27 @@ export default function Registration() {
                               <FormLabel className="font-semibold cursor-pointer w-full">Self Transport</FormLabel>
                             </FormItem>
                           </RadioGroup>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="specialNeeds"
+                    render={({ field }) => (
+                      <FormItem>
+                        <div className="flex items-center gap-2 text-primary mb-1">
+                          <FormLabel className="text-base font-semibold">Special Needs <span className="text-muted-foreground font-normal text-sm">(Optional)</span></FormLabel>
+                        </div>
+                        <p className="text-sm text-muted-foreground -mt-1">Any special requirements for busing or rooming we should know about?</p>
+                        <FormControl>
+                          <Textarea
+                            placeholder="e.g. I need a ground-floor room, or I require a specific pickup point for the bus..."
+                            className="bg-white resize-none min-h-[90px]"
+                            {...field}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
