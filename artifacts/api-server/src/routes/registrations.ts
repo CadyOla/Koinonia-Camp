@@ -162,11 +162,15 @@ router.post("/registrations", async (req, res): Promise<void> => {
         message: err?.message,
         code: err?.code,
         detail: err?.detail,
-        stack: err?.stack,
+        causeMessage: err?.cause?.message,
+        causeCode: err?.cause?.code,
+        causeDetail: err?.cause?.detail,
       },
       "Registration failed",
     );
-    res.status(500).json({ error: err?.message || "Unknown error" });
+    res
+      .status(500)
+      .json({ error: err?.cause?.message || err?.message || "Unknown error" });
   }
 });
 
