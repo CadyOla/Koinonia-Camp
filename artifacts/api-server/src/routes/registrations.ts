@@ -45,7 +45,9 @@ router.get("/registrations", async (req, res): Promise<void> => {
     conditions.push(eq(registrationsTable.branch, branch));
   }
   if (accommodation) {
-    conditions.push(eq(registrationsTable.accommodationPreference, accommodation));
+    conditions.push(
+      eq(registrationsTable.accommodationPreference, accommodation),
+    );
   }
   if (feeding) {
     conditions.push(eq(registrationsTable.feedingPreference, feeding));
@@ -82,74 +84,90 @@ router.post("/registrations", async (req, res): Promise<void> => {
   }
 
   const data = parsed.data;
-  const ministriesStr = Array.isArray(data.ministries) ? data.ministries.join(",") : "";
+  const ministriesStr = Array.isArray(data.ministries)
+    ? data.ministries.join(",")
+    : "";
 
-  // Check for existing registration by name + phone (case-insensitive)
-  const existing = await db
-    .select()
-    .from(registrationsTable)
-    .where(
-      and(
-        sql`lower(${registrationsTable.fullName}) = lower(${data.fullName})`,
-        sql`lower(${registrationsTable.phoneNumber}) = lower(${data.phoneNumber})`,
-      ),
-    )
-    .limit(1);
+  try {
+    // Check for existing registration by name + phone (case-insensitive)
+    const existing = await db
+      .select()
+      .from(registrationsTable)
+      .where(
+        and(
+          sql`lower(${registrationsTable.fullName}) = lower(${data.fullName})`,
+          sql`lower(${registrationsTable.phoneNumber}) = lower(${data.phoneNumber})`,
+        ),
+      )
+      .limit(1);
 
-  let row: typeof registrationsTable.$inferSelect;
+    let row: typeof registrationsTable.$inferSelect;
 
-  if (existing.length > 0) {
-    // Update existing
-    const [updated] = await db
-      .update(registrationsTable)
-      .set({
-        email: data.email ?? null,
-        gender: data.gender,
-        branch: data.branch,
-        ministries: ministriesStr,
-        emergencyContactName: data.emergencyContactName,
-        emergencyContactNumber: data.emergencyContactNumber,
-        accommodationPreference: data.accommodationPreference,
-        roomTypePreference: data.roomTypePreference ?? null,
-        lodgingType: data.lodgingType ?? null,
-        roommatePreferences: data.roommatePreferences ?? null,
-        specialNeeds: data.specialNeeds ?? null,
-        feedingPreference: data.feedingPreference,
-        transportPreference: data.transportPreference,
-        updatedAt: new Date(),
-      })
-      .where(eq(registrationsTable.id, existing[0].id))
-      .returning();
-    row = updated;
-  } else {
-    // Create new
-    const referenceNumber = generateReferenceNumber();
-    const [inserted] = await db
-      .insert(registrationsTable)
-      .values({
-        referenceNumber,
-        fullName: data.fullName,
-        phoneNumber: data.phoneNumber,
-        email: data.email ?? null,
-        gender: data.gender,
-        branch: data.branch,
-        ministries: ministriesStr,
-        emergencyContactName: data.emergencyContactName,
-        emergencyContactNumber: data.emergencyContactNumber,
-        accommodationPreference: data.accommodationPreference,
-        roomTypePreference: data.roomTypePreference ?? null,
-        lodgingType: data.lodgingType ?? null,
-        roommatePreferences: data.roommatePreferences ?? null,
-        specialNeeds: data.specialNeeds ?? null,
-        feedingPreference: data.feedingPreference,
-        transportPreference: data.transportPreference,
-      })
-      .returning();
-    row = inserted;
+    if (existing.length > 0) {
+      const [updated] = await db
+        .update(registrationsTable)
+        .set({
+          email: data.email ?? null,
+          gender: data.gender,
+          branch: data.branch,
+          ministries: ministriesStr,
+          emergencyContactName: data.emergencyContactName,
+          emergencyContactNumber: data.emergencyContactNumber,
+          accommodationPreference: data.accommodationPreference,
+          roomTypePreference: data.roomTypePreference ?? null,
+          lodgingType: data.lodgingType ?? null,
+          roommatePreferences: data.roommatePreferences ?? null,
+          specialNeeds: data.specialNeeds ?? null,
+          feedingPreference: data.feedingPreference,
+          transportPreference: data.transportPreference,
+          updatedAt: new Date(),
+        })
+        .where(eq(registrationsTable.id, existing[0].id))
+        .returning();
+      row = updated;
+    } else {
+      const referenceNumber = generateReferenceNumber();
+      const [inserted] = await db
+        .insert(registrationsTable)
+        .values({
+          referenceNumber,
+          fullName: data.fullName,
+          phoneNumber: data.phoneNumber,
+          email: data.email ?? null,
+          gender: data.gender,
+          branch: data.branch,
+          ministries: ministriesStr,
+          emergencyContactName: data.emergencyContactName,
+          emergencyContactNumber: data.emergencyContactNumber,
+          accommodationPreference: data.accommodationPreference,
+          roomTypePreference: data.roomTypePreference ?? null,
+          lodgingType: data.lodgingType ?? null,
+          roommatePreferences: data.roommatePreferences ?? null,
+          specialNeeds: data.specialNeeds ?? null,
+          feedingPreference: data.feedingPreference,
+          transportPreference: data.transportPreference,
+        })
+        .returning();
+      row = inserted;
+    }
+
+    req.log.info(
+      { referenceNumber: row.referenceNumber },
+      "Registration submitted",
+    );
+    res.json(GetRegistrationResponse.parse(toApiRegistration(row)));
+  } catch (err: any) {
+    req.log.error(
+      {
+        message: err?.message,
+        code: err?.code,
+        detail: err?.detail,
+        stack: err?.stack,
+      },
+      "Registration failed",
+    );
+    res.status(500).json({ error: err?.message || "Unknown error" });
   }
-
-  req.log.info({ referenceNumber: row.referenceNumber }, "Registration submitted");
-  res.json(GetRegistrationResponse.parse(toApiRegistration(row)));
 });
 
 // GET /registrations/stats — must come BEFORE /registrations/:id
@@ -157,12 +175,24 @@ router.get("/registrations/stats", async (req, res): Promise<void> => {
   const rows = await db.select().from(registrationsTable);
 
   const total = rows.length;
-  const resident = rows.filter((r) => r.accommodationPreference === "Resident").length;
-  const nonResident = rows.filter((r) => r.accommodationPreference === "Non-Resident").length;
-  const churchFeeding = rows.filter((r) => r.feedingPreference === "Church Feeding").length;
-  const selfFeeding = rows.filter((r) => r.feedingPreference === "Self Feeding").length;
-  const churchBus = rows.filter((r) => r.transportPreference === "Church Bus").length;
-  const selfTransport = rows.filter((r) => r.transportPreference === "Self Transport").length;
+  const resident = rows.filter(
+    (r) => r.accommodationPreference === "Resident",
+  ).length;
+  const nonResident = rows.filter(
+    (r) => r.accommodationPreference === "Non-Resident",
+  ).length;
+  const churchFeeding = rows.filter(
+    (r) => r.feedingPreference === "Church Feeding",
+  ).length;
+  const selfFeeding = rows.filter(
+    (r) => r.feedingPreference === "Self Feeding",
+  ).length;
+  const churchBus = rows.filter(
+    (r) => r.transportPreference === "Church Bus",
+  ).length;
+  const selfTransport = rows.filter(
+    (r) => r.transportPreference === "Self Transport",
+  ).length;
 
   // Branch breakdown
   const branchMap = new Map<string, number>();
