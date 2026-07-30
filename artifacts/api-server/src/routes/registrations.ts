@@ -1,4 +1,5 @@
 import { Router, type IRouter } from "express";
+import { requireAdmin } from "./admin-auth";
 import { eq, and, ilike, or, sql } from "drizzle-orm";
 import { db, registrationsTable } from "@workspace/db";
 import {
@@ -28,7 +29,7 @@ function toApiRegistration(row: typeof registrationsTable.$inferSelect) {
 }
 
 // GET /registrations
-router.get("/registrations", async (req, res): Promise<void> => {
+  router.get("/registrations", requireAdmin, async (req, res): Promise<void> => {
   const parsed = ListRegistrationsQueryParams.safeParse(req.query);
   if (!parsed.success) {
     res.status(400).json({ error: parsed.error.message });
@@ -175,7 +176,7 @@ router.post("/registrations", async (req, res): Promise<void> => {
 });
 
 // GET /registrations/stats — must come BEFORE /registrations/:id
-router.get("/registrations/stats", async (req, res): Promise<void> => {
+  router.get("/registrations/stats", requireAdmin, async (req, res): Promise<void> => {
   const rows = await db.select().from(registrationsTable);
 
   const total = rows.length;
