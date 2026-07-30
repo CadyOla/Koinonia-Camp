@@ -32,6 +32,7 @@ export interface Registration {
   specialNeeds?: string | null;
   feedingPreference: string;
   transportPreference: string;
+  ageCategory: string;
   /** @nullable */
   paymentStatus?: string | null;
   /** @nullable */
@@ -41,6 +42,15 @@ export interface Registration {
   createdAt: string;
   updatedAt: string;
 }
+
+export type RegistrationInputAgeCategory = typeof RegistrationInputAgeCategory[keyof typeof RegistrationInputAgeCategory];
+
+
+export const RegistrationInputAgeCategory = {
+  Adult: 'Adult',
+  Teen: 'Teen',
+  Child: 'Child',
+} as const;
 
 export interface RegistrationInput {
   /** @minLength 1 */
@@ -62,6 +72,7 @@ export interface RegistrationInput {
   specialNeeds?: string;
   feedingPreference: string;
   transportPreference: string;
+  ageCategory: RegistrationInputAgeCategory;
 }
 
 export interface CountByLabel {

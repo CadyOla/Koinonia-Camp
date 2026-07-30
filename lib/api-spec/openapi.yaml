@@ -151,6 +151,7 @@ components:
         - accommodationPreference
         - feedingPreference
         - transportPreference
+        - ageCategory
         - createdAt
         - updatedAt
       properties:
@@ -190,6 +191,8 @@ components:
           type: string
         transportPreference:
           type: string
+        ageCategory:
+          type: string
         paymentStatus:
           type: ["string", "null"]
         roomAssignment:
@@ -214,6 +217,8 @@ components:
         - accommodationPreference
         - feedingPreference
         - transportPreference
+        - ageCategory
+        
       properties:
         fullName:
           type: string
@@ -251,6 +256,12 @@ components:
           type: string
         transportPreference:
           type: string
+        ageCategory:
+          type: string
+          enum:
+            - Adult
+            - Teen
+            - Child
 
     RegistrationStats:
       type: object

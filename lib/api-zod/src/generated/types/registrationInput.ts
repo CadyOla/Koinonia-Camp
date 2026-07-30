@@ -5,6 +5,7 @@
  * Koinonia Camp Registration API
  * OpenAPI spec version: 0.1.0
  */
+import type { RegistrationInputAgeCategory } from './registrationInputAgeCategory';
 
 export interface RegistrationInput {
   /** @minLength 1 */
@@ -26,4 +27,5 @@ export interface RegistrationInput {
   specialNeeds?: string;
   feedingPreference: string;
   transportPreference: string;
+  ageCategory: RegistrationInputAgeCategory;
 }

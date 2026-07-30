@@ -29,7 +29,7 @@ function toApiRegistration(row: typeof registrationsTable.$inferSelect) {
 }
 
 // GET /registrations
-  router.get("/registrations", requireAdmin, async (req, res): Promise<void> => {
+router.get("/registrations", requireAdmin, async (req, res): Promise<void> => {
   const parsed = ListRegistrationsQueryParams.safeParse(req.query);
   if (!parsed.success) {
     res.status(400).json({ error: parsed.error.message });
@@ -121,6 +121,7 @@ router.post("/registrations", async (req, res): Promise<void> => {
           specialNeeds: data.specialNeeds ?? null,
           feedingPreference: data.feedingPreference,
           transportPreference: data.transportPreference,
+          ageCategory: data.ageCategory,
           updatedAt: new Date(),
         })
         .where(eq(registrationsTable.id, existing[0].id))
@@ -147,6 +148,7 @@ router.post("/registrations", async (req, res): Promise<void> => {
           specialNeeds: data.specialNeeds ?? null,
           feedingPreference: data.feedingPreference,
           transportPreference: data.transportPreference,
+          ageCategory: data.ageCategory,
         })
         .returning();
       row = inserted;
@@ -176,64 +178,68 @@ router.post("/registrations", async (req, res): Promise<void> => {
 });
 
 // GET /registrations/stats — must come BEFORE /registrations/:id
-  router.get("/registrations/stats", requireAdmin, async (req, res): Promise<void> => {
-  const rows = await db.select().from(registrationsTable);
+router.get(
+  "/registrations/stats",
+  requireAdmin,
+  async (req, res): Promise<void> => {
+    const rows = await db.select().from(registrationsTable);
 
-  const total = rows.length;
-  const resident = rows.filter(
-    (r) => r.accommodationPreference === "Resident",
-  ).length;
-  const nonResident = rows.filter(
-    (r) => r.accommodationPreference === "Non-Resident",
-  ).length;
-  const churchFeeding = rows.filter(
-    (r) => r.feedingPreference === "Church Feeding",
-  ).length;
-  const selfFeeding = rows.filter(
-    (r) => r.feedingPreference === "Self Feeding",
-  ).length;
-  const churchBus = rows.filter(
-    (r) => r.transportPreference === "Church Bus",
-  ).length;
-  const selfTransport = rows.filter(
-    (r) => r.transportPreference === "Self Transport",
-  ).length;
+    const total = rows.length;
+    const resident = rows.filter(
+      (r) => r.accommodationPreference === "Resident",
+    ).length;
+    const nonResident = rows.filter(
+      (r) => r.accommodationPreference === "Non-Resident",
+    ).length;
+    const churchFeeding = rows.filter(
+      (r) => r.feedingPreference === "Church Feeding",
+    ).length;
+    const selfFeeding = rows.filter(
+      (r) => r.feedingPreference === "Self Feeding",
+    ).length;
+    const churchBus = rows.filter(
+      (r) => r.transportPreference === "Church Bus",
+    ).length;
+    const selfTransport = rows.filter(
+      (r) => r.transportPreference === "Self Transport",
+    ).length;
 
-  // Branch breakdown
-  const branchMap = new Map<string, number>();
-  for (const r of rows) {
-    branchMap.set(r.branch, (branchMap.get(r.branch) ?? 0) + 1);
-  }
-  const byBranch = Array.from(branchMap.entries())
-    .map(([label, count]) => ({ label, count }))
-    .sort((a, b) => b.count - a.count);
-
-  // Ministry breakdown
-  const ministryMap = new Map<string, number>();
-  for (const r of rows) {
-    const minis = r.ministries ? r.ministries.split(",").filter(Boolean) : [];
-    for (const m of minis) {
-      ministryMap.set(m, (ministryMap.get(m) ?? 0) + 1);
+    // Branch breakdown
+    const branchMap = new Map<string, number>();
+    for (const r of rows) {
+      branchMap.set(r.branch, (branchMap.get(r.branch) ?? 0) + 1);
     }
-  }
-  const byMinistry = Array.from(ministryMap.entries())
-    .map(([label, count]) => ({ label, count }))
-    .sort((a, b) => b.count - a.count);
+    const byBranch = Array.from(branchMap.entries())
+      .map(([label, count]) => ({ label, count }))
+      .sort((a, b) => b.count - a.count);
 
-  const stats = {
-    total,
-    resident,
-    nonResident,
-    churchFeeding,
-    selfFeeding,
-    churchBus,
-    selfTransport,
-    byBranch,
-    byMinistry,
-  };
+    // Ministry breakdown
+    const ministryMap = new Map<string, number>();
+    for (const r of rows) {
+      const minis = r.ministries ? r.ministries.split(",").filter(Boolean) : [];
+      for (const m of minis) {
+        ministryMap.set(m, (ministryMap.get(m) ?? 0) + 1);
+      }
+    }
+    const byMinistry = Array.from(ministryMap.entries())
+      .map(([label, count]) => ({ label, count }))
+      .sort((a, b) => b.count - a.count);
 
-  res.json(GetRegistrationStatsResponse.parse(stats));
-});
+    const stats = {
+      total,
+      resident,
+      nonResident,
+      churchFeeding,
+      selfFeeding,
+      churchBus,
+      selfTransport,
+      byBranch,
+      byMinistry,
+    };
+
+    res.json(GetRegistrationStatsResponse.parse(stats));
+  },
+);
 
 // GET /registrations/:id
 router.get("/registrations/:id", async (req, res): Promise<void> => {

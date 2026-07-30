@@ -21,15 +21,23 @@ export const registrationsTable = pgTable("registrations", {
   specialNeeds: text("special_needs"),
   feedingPreference: text("feeding_preference").notNull(),
   transportPreference: text("transport_preference").notNull(),
+  ageCategory: text("age_category").notNull(),
   // Future fields — not exposed in phase 1 UI
   paymentStatus: text("payment_status"),
   roomAssignment: text("room_assignment"),
   busAssignment: text("bus_assignment"),
-  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
-  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow().$onUpdate(() => new Date()),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .notNull()
+    .defaultNow()
+    .$onUpdate(() => new Date()),
 });
 
-export const insertRegistrationSchema = createInsertSchema(registrationsTable).omit({
+export const insertRegistrationSchema = createInsertSchema(
+  registrationsTable,
+).omit({
   id: true,
   createdAt: true,
   updatedAt: true,

@@ -12,4 +12,5 @@ export * from './healthStatus';
 export * from './listRegistrationsParams';
 export * from './registration';
 export * from './registrationInput';
+export * from './registrationInputAgeCategory';
 export * from './registrationStats';

@@ -29,6 +29,7 @@ export interface Registration {
   specialNeeds?: string | null;
   feedingPreference: string;
   transportPreference: string;
+  ageCategory: string;
   /** @nullable */
   paymentStatus?: string | null;
   /** @nullable */

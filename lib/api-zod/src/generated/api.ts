@@ -46,6 +46,7 @@ export const ListRegistrationsResponseItem = zod.object({
   "specialNeeds": zod.string().nullish(),
   "feedingPreference": zod.string(),
   "transportPreference": zod.string(),
+  "ageCategory": zod.string(),
   "paymentStatus": zod.string().nullish(),
   "roomAssignment": zod.string().nullish(),
   "busAssignment": zod.string().nullish(),
@@ -80,7 +81,8 @@ export const SubmitRegistrationBody = zod.object({
   "roommatePreferences": zod.string().optional(),
   "specialNeeds": zod.string().optional(),
   "feedingPreference": zod.string(),
-  "transportPreference": zod.string()
+  "transportPreference": zod.string(),
+  "ageCategory": zod.enum(['Adult', 'Teen', 'Child'])
 })
 
 export const SubmitRegistrationResponse = zod.object({
@@ -101,6 +103,7 @@ export const SubmitRegistrationResponse = zod.object({
   "specialNeeds": zod.string().nullish(),
   "feedingPreference": zod.string(),
   "transportPreference": zod.string(),
+  "ageCategory": zod.string(),
   "paymentStatus": zod.string().nullish(),
   "roomAssignment": zod.string().nullish(),
   "busAssignment": zod.string().nullish(),
@@ -156,6 +159,7 @@ export const GetRegistrationResponse = zod.object({
   "specialNeeds": zod.string().nullish(),
   "feedingPreference": zod.string(),
   "transportPreference": zod.string(),
+  "ageCategory": zod.string(),
   "paymentStatus": zod.string().nullish(),
   "roomAssignment": zod.string().nullish(),
   "busAssignment": zod.string().nullish(),
