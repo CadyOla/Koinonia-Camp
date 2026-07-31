@@ -6,6 +6,7 @@ import { Route, Switch, Router as WouterRouter } from 'wouter';
 
 import Registration from './pages/registration';
 import AdminDashboard from './pages/admin';
+import MyRegistration from './pages/my-registration';
 
 const queryClient = new QueryClient();
 
@@ -14,6 +15,7 @@ function Router() {
     <Switch>
       <Route path="/" component={Registration} />
       <Route path="/admin" component={AdminDashboard} />
+      <Route path="/my-registration" component={MyRegistration} />
       <Route component={NotFound} />
     </Switch>
   );

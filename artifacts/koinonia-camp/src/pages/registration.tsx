@@ -2,45 +2,24 @@ import React, { useState } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  useSubmitRegistration,
-  RegistrationInput,
-} from "@workspace/api-client-react";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { useSubmitRegistration, RegistrationInput } from "@workspace/api-client-react";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Badge } from "@/components/ui/badge";
-import {
-  ChevronRight,
-  ArrowLeft,
-  CheckCircle2,
-  Loader2,
-  Tent,
-  MapPin,
-  Bus,
-  Utensils,
-} from "lucide-react";
+import { ChevronRight, ArrowLeft, CheckCircle2, Loader2, Tent, MapPin, Bus, Utensils } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import flyerBg from "@assets/6fbb5613-c955-4bb3-b4eb-f71d5d3d0779_1785106584113.jpeg";
 
-const BRANCHES = ["Accra Main (Okponglo)", "Tema", "Campus Church (Legon)"];
+const BRANCHES = [
+  "Accra Main (Okponglo)",
+  "Tema",
+  "Campus Church (Legon)",
+];
 
 const MINISTRIES = [
   "Prayer",
@@ -57,55 +36,33 @@ const MINISTRIES = [
   "Other",
 ];
 
-const registrationSchema = z
-  .object({
-    fullName: z.string().min(2, "Full name is required"),
-    ageCategory: z.enum(["Adult", "Teen", "Child"], {
-      required_error: "Please select an option",
-    }),
-    phoneNumber: z.string().min(9, "Phone number is required"),
-    email: z.string().email("Invalid email").optional().or(z.literal("")),
-    gender: z.enum(["Male", "Female"], {
-      required_error: "Please select a gender",
-    }),
-    branch: z.string().min(1, "Please select a branch"),
-    ministries: z.array(z.string()).min(1, "Please select at least one option"),
-    emergencyContactName: z.string().min(2, "Emergency contact name required"),
-    emergencyContactNumber: z
-      .string()
-      .min(9, "Emergency contact number required"),
-    accommodationPreference: z.enum(["Resident", "Non-Resident"], {
-      required_error: "Select accommodation preference",
-    }),
-    roomTypePreference: z.string().optional(),
-    lodgingType: z.string().optional(),
-    roommatePreferences: z.string().optional(),
-    specialNeeds: z.string().optional(),
-    feedingPreference: z.enum(["Church Feeding", "Self Feeding"], {
-      required_error: "Select feeding preference",
-    }),
-    transportPreference: z.enum(["Church Bus", "Self Transport"], {
-      required_error: "Select transport preference",
-    }),
-  })
-  .superRefine((data, ctx) => {
-    if (data.accommodationPreference === "Resident") {
-      if (!data.roomTypePreference) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "Please select a room type",
-          path: ["roomTypePreference"],
-        });
-      }
-      if (!data.lodgingType) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "Please select a lodging type",
-          path: ["lodgingType"],
-        });
-      }
+const registrationSchema = z.object({
+  fullName: z.string().min(2, "Full name is required"),
+  ageCategory: z.enum(["Adult", "Teen", "Child"], { required_error: "Please select an option" }),
+  phoneNumber: z.string().min(9, "Phone number is required"),
+  email: z.string().email("Invalid email").optional().or(z.literal("")),
+  gender: z.enum(["Male", "Female"], { required_error: "Please select a gender" }),
+  branch: z.string().min(1, "Please select a branch"),
+  ministries: z.array(z.string()).min(1, "Please select at least one option"),
+  emergencyContactName: z.string().min(2, "Emergency contact name required"),
+  emergencyContactNumber: z.string().min(9, "Emergency contact number required"),
+  accommodationPreference: z.enum(["Resident", "Non-Resident"], { required_error: "Select accommodation preference" }),
+  roomTypePreference: z.string().optional(),
+  lodgingType: z.string().optional(),
+  roommatePreferences: z.string().optional(),
+  specialNeeds: z.string().optional(),
+  feedingPreference: z.enum(["Church Feeding", "Self Feeding"], { required_error: "Select feeding preference" }),
+  transportPreference: z.enum(["Church Bus", "Self Transport"], { required_error: "Select transport preference" }),
+}).superRefine((data, ctx) => {
+  if (data.accommodationPreference === "Resident") {
+    if (!data.roomTypePreference) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Please select a room type", path: ["roomTypePreference"] });
     }
-  });
+    if (!data.lodgingType) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Please select a lodging type", path: ["lodgingType"] });
+    }
+  }
+});
 
 type RegistrationFormValues = z.infer<typeof registrationSchema>;
 
@@ -143,20 +100,9 @@ export default function Registration() {
   const nextStep = async () => {
     let fieldsToValidate: any[] = [];
     if (step === 1) {
-      fieldsToValidate = [
-        "fullName",
-        "phoneNumber",
-        "email",
-        "gender",
-        "ageCategory",
-      ];
+      fieldsToValidate = ['fullName', 'phoneNumber', 'email', 'gender', 'ageCategory'];
     } else if (step === 2) {
-      fieldsToValidate = [
-        "branch",
-        "ministries",
-        "emergencyContactName",
-        "emergencyContactNumber",
-      ];
+      fieldsToValidate = ['branch', 'ministries', 'emergencyContactName', 'emergencyContactNumber'];
     }
 
     const isValid = await form.trigger(fieldsToValidate as any);
@@ -172,11 +118,8 @@ export default function Registration() {
   };
 
   const onSubmit = (data: RegistrationFormValues) => {
-    // If "Other" ministry selected and text provided, substitute the free-text label
     const resolvedMinistries = data.ministries.map((m) =>
-      m === "Other" && otherMinistryText.trim()
-        ? `Other: ${otherMinistryText.trim()}`
-        : m,
+      m === "Other" && otherMinistryText.trim() ? `Other: ${otherMinistryText.trim()}` : m,
     );
     const payload: RegistrationInput = {
       fullName: data.fullName,
@@ -197,50 +140,37 @@ export default function Registration() {
       transportPreference: data.transportPreference,
     };
 
-    submitRegistration.mutate(
-      { data: payload },
-      {
-        onSuccess: (res) => {
-          setReferenceNumber(res.referenceNumber);
-          window.scrollTo(0, 0);
-        },
-        onError: (err: any) => {
-          toast({
-            title: "Registration Failed",
-            description:
-              err?.error || "Something went wrong. Please try again.",
-            variant: "destructive",
-          });
-        },
+    submitRegistration.mutate({ data: payload }, {
+      onSuccess: (res) => {
+        setReferenceNumber(res.referenceNumber);
+        window.scrollTo(0, 0);
       },
-    );
+      onError: (err: any) => {
+        toast({
+          title: "Registration Failed",
+          description: err?.error || "Something went wrong. Please try again.",
+          variant: "destructive",
+        });
+      }
+    });
   };
 
   if (referenceNumber) {
     return (
       <div className="min-h-[100dvh] w-full bg-background flex items-center justify-center p-4">
         <div className="max-w-md w-full bg-white rounded-[2rem] shadow-xl p-8 text-center animate-in zoom-in-95 duration-500 relative overflow-hidden">
-          {/* Decorative background element */}
           <div className="absolute top-0 left-0 right-0 h-32 bg-primary/5 rounded-b-[50%] -z-10" />
 
           <div className="mx-auto w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mb-6 shadow-sm ring-8 ring-green-50">
             <CheckCircle2 className="w-10 h-10" />
           </div>
 
-          <h2 className="text-3xl font-serif font-bold text-foreground mb-2">
-            You're Registered!
-          </h2>
-          <p className="text-muted-foreground mb-8 text-lg">
-            We can't wait to see you at camp.
-          </p>
+          <h2 className="text-3xl font-serif font-bold text-foreground mb-2">You're Registered!</h2>
+          <p className="text-muted-foreground mb-8 text-lg">We can't wait to see you at camp.</p>
 
           <div className="bg-accent/30 border border-accent rounded-2xl p-6 mb-8 relative">
-            <p className="text-sm font-medium text-muted-foreground uppercase tracking-widest mb-2">
-              Reference Number
-            </p>
-            <p className="text-4xl font-mono font-bold text-primary tracking-tight">
-              {referenceNumber}
-            </p>
+            <p className="text-sm font-medium text-muted-foreground uppercase tracking-widest mb-2">Reference Number</p>
+            <p className="text-4xl font-mono font-bold text-primary tracking-tight">{referenceNumber}</p>
           </div>
 
           <div className="space-y-3 text-sm text-foreground bg-gray-50 rounded-xl p-5 text-left border border-gray-100">
@@ -253,6 +183,13 @@ export default function Registration() {
               <span>Sept 18–21, 2026</span>
             </div>
           </div>
+
+
+            href="/my-registration"
+            className="block mt-4 text-sm text-primary font-medium hover:underline"
+          >
+            View my registration anytime →
+          </a>
         </div>
       </div>
     );
@@ -262,11 +199,10 @@ export default function Registration() {
 
   return (
     <div className="min-h-[100dvh] w-full bg-background flex flex-col md:flex-row relative">
-      {/* Decorative backdrop for desktop */}
       <div className="hidden md:flex flex-1 relative bg-primary">
-        <img
-          src={flyerBg}
-          alt="Camp Background"
+        <img 
+          src={flyerBg} 
+          alt="Camp Background" 
           className="absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-overlay"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-primary via-primary/50 to-transparent" />
@@ -284,11 +220,10 @@ export default function Registration() {
       </div>
 
       <div className="flex-1 flex flex-col min-h-[100dvh] overflow-y-auto">
-        {/* Mobile Header */}
         <div className="md:hidden relative h-64 overflow-hidden flex-shrink-0">
-          <img
-            src={flyerBg}
-            alt="Camp Background"
+          <img 
+            src={flyerBg} 
+            alt="Camp Background" 
             className="absolute inset-0 w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-primary/60 to-background" />
@@ -296,64 +231,45 @@ export default function Registration() {
             <h1 className="text-3xl font-serif font-bold text-white mb-2 leading-tight">
               Koinonia Camp
             </h1>
-            <p className="text-white/90 text-sm font-medium">
-              Prepare to meet thy God
-            </p>
+            <p className="text-white/90 text-sm font-medium">Prepare to meet thy God</p>
           </div>
         </div>
 
         <div className="flex-1 w-full max-w-xl mx-auto p-6 md:p-12 md:my-auto flex flex-col justify-center">
           <div className="mb-8 hidden md:block">
             <h2 className="text-3xl font-bold text-foreground">Register</h2>
-            <p className="text-muted-foreground mt-2">
-              Takes less than 2 minutes.
-            </p>
+            <p className="text-muted-foreground mt-2">Takes less than 2 minutes.</p>
           </div>
 
           <div className="md:hidden mb-6 flex justify-between items-end">
             <h2 className="text-2xl font-bold text-foreground">Registration</h2>
-            <span className="text-sm font-medium text-secondary">
-              Step {step} of 3
-            </span>
+            <span className="text-sm font-medium text-secondary">Step {step} of 3</span>
           </div>
 
-          {/* Progress Bar */}
           <div className="flex gap-2 mb-8">
             {[1, 2, 3].map((i) => (
-              <div
-                key={i}
+              <div 
+                key={i} 
                 className={`h-1.5 flex-1 rounded-full transition-all duration-300 ${
                   step >= i ? "bg-secondary" : "bg-secondary/20"
-                }`}
+                }`} 
               />
             ))}
           </div>
 
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              {/* STEP 1: Personal Info */}
-              <div
-                className={
-                  step === 1
-                    ? "block animate-in slide-in-from-right-4 duration-300"
-                    : "hidden"
-                }
-              >
+
+              <div className={step === 1 ? "block animate-in slide-in-from-right-4 duration-300" : "hidden"}>
                 <div className="space-y-5">
                   <FormField
                     control={form.control}
                     name="fullName"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>
-                          Full Name <span className="text-destructive">*</span>
-                        </FormLabel>
+                        <FormLabel>Full Name <span className="text-destructive">*</span></FormLabel>
                         <FormControl>
-                          <Input
-                            placeholder="John Doe"
-                            className="h-12 bg-white"
-                            {...field}
-                          />
+                          <Input placeholder="John Doe" className="h-12 bg-white" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -364,17 +280,9 @@ export default function Registration() {
                     name="phoneNumber"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>
-                          Phone Number{" "}
-                          <span className="text-destructive">*</span>
-                        </FormLabel>
+                        <FormLabel>Phone Number <span className="text-destructive">*</span></FormLabel>
                         <FormControl>
-                          <Input
-                            type="tel"
-                            placeholder="055 000 0000"
-                            className="h-12 bg-white"
-                            {...field}
-                          />
+                          <Input type="tel" placeholder="055 000 0000" className="h-12 bg-white" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -387,12 +295,7 @@ export default function Registration() {
                       <FormItem>
                         <FormLabel>Email Address (Optional)</FormLabel>
                         <FormControl>
-                          <Input
-                            type="email"
-                            placeholder="john@example.com"
-                            className="h-12 bg-white"
-                            {...field}
-                          />
+                          <Input type="email" placeholder="john@example.com" className="h-12 bg-white" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -403,9 +306,7 @@ export default function Registration() {
                     name="gender"
                     render={({ field }) => (
                       <FormItem className="space-y-3">
-                        <FormLabel>
-                          Gender <span className="text-destructive">*</span>
-                        </FormLabel>
+                        <FormLabel>Gender <span className="text-destructive">*</span></FormLabel>
                         <FormControl>
                           <RadioGroup
                             onValueChange={field.onChange}
@@ -416,17 +317,13 @@ export default function Registration() {
                               <FormControl>
                                 <RadioGroupItem value="Male" />
                               </FormControl>
-                              <FormLabel className="font-normal cursor-pointer w-full">
-                                Male
-                              </FormLabel>
+                              <FormLabel className="font-normal cursor-pointer w-full">Male</FormLabel>
                             </FormItem>
                             <FormItem className="flex items-center space-x-3 space-y-0 bg-white border rounded-xl p-4 flex-1 cursor-pointer [&:has([data-state=checked])]:border-secondary [&:has([data-state=checked])]:ring-1 [&:has([data-state=checked])]:ring-secondary">
                               <FormControl>
                                 <RadioGroupItem value="Female" />
                               </FormControl>
-                              <FormLabel className="font-normal cursor-pointer w-full">
-                                Female
-                              </FormLabel>
+                              <FormLabel className="font-normal cursor-pointer w-full">Female</FormLabel>
                             </FormItem>
                           </RadioGroup>
                         </FormControl>
@@ -439,10 +336,7 @@ export default function Registration() {
                     name="ageCategory"
                     render={({ field }) => (
                       <FormItem className="space-y-3">
-                        <FormLabel>
-                          Are you an Adult, Teen, or Child?{" "}
-                          <span className="text-destructive">*</span>
-                        </FormLabel>
+                        <FormLabel>Are you an Adult, Teen, or Child? <span className="text-destructive">*</span></FormLabel>
                         <FormControl>
                           <RadioGroup
                             onValueChange={field.onChange}
@@ -450,16 +344,11 @@ export default function Registration() {
                             className="grid grid-cols-3 gap-2"
                           >
                             {["Adult", "Teen", "Child"].map((type) => (
-                              <FormItem
-                                key={type}
-                                className="flex items-center space-x-2 space-y-0 bg-white border rounded-xl p-4 cursor-pointer [&:has([data-state=checked])]:border-secondary [&:has([data-state=checked])]:ring-1 [&:has([data-state=checked])]:ring-secondary"
-                              >
+                              <FormItem key={type} className="flex items-center space-x-2 space-y-0 bg-white border rounded-xl p-4 cursor-pointer [&:has([data-state=checked])]:border-secondary [&:has([data-state=checked])]:ring-1 [&:has([data-state=checked])]:ring-secondary">
                                 <FormControl>
                                   <RadioGroupItem value={type} />
                                 </FormControl>
-                                <FormLabel className="font-normal cursor-pointer w-full text-sm">
-                                  {type}
-                                </FormLabel>
+                                <FormLabel className="font-normal cursor-pointer w-full text-sm">{type}</FormLabel>
                               </FormItem>
                             ))}
                           </RadioGroup>
@@ -469,47 +358,29 @@ export default function Registration() {
                     )}
                   />
                 </div>
-                <Button
-                  type="button"
-                  onClick={nextStep}
-                  className="w-full h-12 mt-8 text-lg rounded-xl"
-                >
+                <Button type="button" onClick={nextStep} className="w-full h-12 mt-8 text-lg rounded-xl">
                   Next Step
                   <ChevronRight className="w-5 h-5 ml-1" />
                 </Button>
               </div>
 
-              {/* STEP 2: Church Info */}
-              <div
-                className={
-                  step === 2
-                    ? "block animate-in slide-in-from-right-4 duration-300"
-                    : "hidden"
-                }
-              >
+              <div className={step === 2 ? "block animate-in slide-in-from-right-4 duration-300" : "hidden"}>
                 <div className="space-y-5">
                   <FormField
                     control={form.control}
                     name="branch"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>
-                          Branch <span className="text-destructive">*</span>
-                        </FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                        >
+                        <FormLabel>Branch <span className="text-destructive">*</span></FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
                           <FormControl>
                             <SelectTrigger className="h-12 bg-white">
                               <SelectValue placeholder="Select your branch" />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            {BRANCHES.map((b) => (
-                              <SelectItem key={b} value={b}>
-                                {b}
-                              </SelectItem>
+                            {BRANCHES.map(b => (
+                              <SelectItem key={b} value={b}>{b}</SelectItem>
                             ))}
                           </SelectContent>
                         </Select>
@@ -524,13 +395,8 @@ export default function Registration() {
                     render={() => (
                       <FormItem>
                         <div className="mb-3">
-                          <FormLabel>
-                            Ministries{" "}
-                            <span className="text-destructive">*</span>
-                          </FormLabel>
-                          <p className="text-sm text-muted-foreground mt-1">
-                            Select all that apply
-                          </p>
+                          <FormLabel>Ministries <span className="text-destructive">*</span></FormLabel>
+                          <p className="text-sm text-muted-foreground mt-1">Select all that apply</p>
                         </div>
                         <div className="grid grid-cols-1 gap-2 pr-2">
                           {MINISTRIES.map((item) => (
@@ -548,15 +414,8 @@ export default function Registration() {
                                       checked={field.value?.includes(item)}
                                       onCheckedChange={(checked) => {
                                         return checked
-                                          ? field.onChange([
-                                              ...field.value,
-                                              item,
-                                            ])
-                                          : field.onChange(
-                                              field.value?.filter(
-                                                (v) => v !== item,
-                                              ),
-                                            );
+                                          ? field.onChange([...field.value, item])
+                                          : field.onChange(field.value?.filter((v) => v !== item));
                                       }}
                                     />
                                   </FormControl>
@@ -574,9 +433,7 @@ export default function Registration() {
                               placeholder="Please specify your ministry..."
                               className="h-11 bg-white"
                               value={otherMinistryText}
-                              onChange={(e) =>
-                                setOtherMinistryText(e.target.value)
-                              }
+                              onChange={(e) => setOtherMinistryText(e.target.value)}
                             />
                           </div>
                         )}
@@ -586,23 +443,15 @@ export default function Registration() {
                   />
 
                   <div className="pt-4 border-t space-y-5">
-                    <h3 className="font-medium text-foreground">
-                      Emergency Contact
-                    </h3>
+                    <h3 className="font-medium text-foreground">Emergency Contact</h3>
                     <FormField
                       control={form.control}
                       name="emergencyContactName"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>
-                            Name <span className="text-destructive">*</span>
-                          </FormLabel>
+                          <FormLabel>Name <span className="text-destructive">*</span></FormLabel>
                           <FormControl>
-                            <Input
-                              placeholder="Relation's name"
-                              className="h-12 bg-white"
-                              {...field}
-                            />
+                            <Input placeholder="Relation's name" className="h-12 bg-white" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -613,17 +462,9 @@ export default function Registration() {
                       name="emergencyContactNumber"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>
-                            Phone Number{" "}
-                            <span className="text-destructive">*</span>
-                          </FormLabel>
+                          <FormLabel>Phone Number <span className="text-destructive">*</span></FormLabel>
                           <FormControl>
-                            <Input
-                              type="tel"
-                              placeholder="055 000 0000"
-                              className="h-12 bg-white"
-                              {...field}
-                            />
+                            <Input type="tel" placeholder="055 000 0000" className="h-12 bg-white" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -633,33 +474,17 @@ export default function Registration() {
                 </div>
 
                 <div className="flex gap-3 mt-8">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={prevStep}
-                    className="h-12 px-4 rounded-xl"
-                  >
+                  <Button type="button" variant="outline" onClick={prevStep} className="h-12 px-4 rounded-xl">
                     <ArrowLeft className="w-5 h-5" />
                   </Button>
-                  <Button
-                    type="button"
-                    onClick={nextStep}
-                    className="flex-1 h-12 text-lg rounded-xl"
-                  >
+                  <Button type="button" onClick={nextStep} className="flex-1 h-12 text-lg rounded-xl">
                     Next Step
                     <ChevronRight className="w-5 h-5 ml-1" />
                   </Button>
                 </div>
               </div>
 
-              {/* STEP 3: Preferences */}
-              <div
-                className={
-                  step === 3
-                    ? "block animate-in slide-in-from-right-4 duration-300"
-                    : "hidden"
-                }
-              >
+              <div className={step === 3 ? "block animate-in slide-in-from-right-4 duration-300" : "hidden"}>
                 <div className="space-y-8">
                   <FormField
                     control={form.control}
@@ -668,10 +493,7 @@ export default function Registration() {
                       <FormItem className="space-y-4">
                         <div className="flex items-center gap-2 text-primary mb-1">
                           <Tent className="w-5 h-5" />
-                          <FormLabel className="text-base font-semibold">
-                            Accommodation{" "}
-                            <span className="text-destructive">*</span>
-                          </FormLabel>
+                          <FormLabel className="text-base font-semibold">Accommodation <span className="text-destructive">*</span></FormLabel>
                         </div>
                         <FormControl>
                           <RadioGroup
@@ -684,12 +506,8 @@ export default function Registration() {
                                 <RadioGroupItem value="Resident" />
                               </FormControl>
                               <div className="flex flex-col">
-                                <FormLabel className="font-semibold cursor-pointer">
-                                  Resident
-                                </FormLabel>
-                                <span className="text-xs text-muted-foreground mt-0.5">
-                                  Staying at the camp grounds
-                                </span>
+                                <FormLabel className="font-semibold cursor-pointer">Resident</FormLabel>
+                                <span className="text-xs text-muted-foreground mt-0.5">Staying at the camp grounds</span>
                               </div>
                             </FormItem>
                             <FormItem className="flex items-center space-x-3 space-y-0 bg-white border rounded-xl p-4 cursor-pointer [&:has([data-state=checked])]:border-secondary [&:has([data-state=checked])]:ring-1 [&:has([data-state=checked])]:ring-secondary transition-all">
@@ -697,12 +515,8 @@ export default function Registration() {
                                 <RadioGroupItem value="Non-Resident" />
                               </FormControl>
                               <div className="flex flex-col">
-                                <FormLabel className="font-semibold cursor-pointer">
-                                  Non-Resident
-                                </FormLabel>
-                                <span className="text-xs text-muted-foreground mt-0.5">
-                                  Commuting daily
-                                </span>
+                                <FormLabel className="font-semibold cursor-pointer">Non-Resident</FormLabel>
+                                <span className="text-xs text-muted-foreground mt-0.5">Commuting daily</span>
                               </div>
                             </FormItem>
                           </RadioGroup>
@@ -714,37 +528,26 @@ export default function Registration() {
 
                   {isResident && (
                     <div className="animate-in slide-in-from-top-2 fade-in duration-200 pl-4 border-l-2 border-secondary/30 ml-2 space-y-5">
-                      {/* Room sharing type */}
                       <FormField
                         control={form.control}
                         name="roomTypePreference"
                         render={({ field }) => (
                           <FormItem className="space-y-3">
-                            <FormLabel className="text-sm font-medium">
-                              Room Sharing{" "}
-                              <span className="text-destructive">*</span>
-                            </FormLabel>
+                            <FormLabel className="text-sm font-medium">Room Sharing <span className="text-destructive">*</span></FormLabel>
                             <FormControl>
                               <RadioGroup
                                 onValueChange={field.onChange}
                                 defaultValue={field.value}
                                 className="grid grid-cols-1 sm:grid-cols-3 gap-2"
                               >
-                                {["Single", "Double", "Four Sharing"].map(
-                                  (type) => (
-                                    <FormItem
-                                      key={type}
-                                      className="flex items-center space-x-2 space-y-0 bg-white border rounded-lg p-3 cursor-pointer [&:has([data-state=checked])]:border-primary [&:has([data-state=checked])]:bg-primary/5"
-                                    >
-                                      <FormControl>
-                                        <RadioGroupItem value={type} />
-                                      </FormControl>
-                                      <FormLabel className="font-normal cursor-pointer text-sm w-full">
-                                        {type}
-                                      </FormLabel>
-                                    </FormItem>
-                                  ),
-                                )}
+                                {["Single", "Double", "Four Sharing"].map((type) => (
+                                  <FormItem key={type} className="flex items-center space-x-2 space-y-0 bg-white border rounded-lg p-3 cursor-pointer [&:has([data-state=checked])]:border-primary [&:has([data-state=checked])]:bg-primary/5">
+                                    <FormControl>
+                                      <RadioGroupItem value={type} />
+                                    </FormControl>
+                                    <FormLabel className="font-normal cursor-pointer text-sm w-full">{type}</FormLabel>
+                                  </FormItem>
+                                ))}
                               </RadioGroup>
                             </FormControl>
                             <FormMessage />
@@ -752,31 +555,18 @@ export default function Registration() {
                         )}
                       />
 
-                      {/* Roommate preferences — shown for shared rooms */}
-                      {(form.watch("roomTypePreference") === "Double" ||
-                        form.watch("roomTypePreference") ===
-                          "Four Sharing") && (
+                      {(form.watch("roomTypePreference") === "Double" || form.watch("roomTypePreference") === "Four Sharing") && (
                         <div className="animate-in slide-in-from-top-2 fade-in duration-200">
                           <FormField
                             control={form.control}
                             name="roommatePreferences"
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel className="text-sm font-medium">
-                                  Preferred Roommates{" "}
-                                  <span className="text-muted-foreground font-normal">
-                                    (Optional)
-                                  </span>
-                                </FormLabel>
-                                <p className="text-xs text-muted-foreground -mt-1">
-                                  Names of people you'd like to share a room
-                                  with, one per line.
-                                </p>
+                                <FormLabel className="text-sm font-medium">Preferred Roommates <span className="text-muted-foreground font-normal">(Optional)</span></FormLabel>
+                                <p className="text-xs text-muted-foreground -mt-1">Names of people you'd like to share a room with, one per line.</p>
                                 <FormControl>
                                   <Textarea
-                                    placeholder={
-                                      "e.g.\nAkosua Mensah\nKofi Asante"
-                                    }
+                                    placeholder={"e.g.\nAkosua Mensah\nKofi Asante"}
                                     className="bg-white resize-none min-h-[90px]"
                                     {...field}
                                   />
@@ -788,16 +578,12 @@ export default function Registration() {
                         </div>
                       )}
 
-                      {/* Lodging type */}
                       <FormField
                         control={form.control}
                         name="lodgingType"
                         render={({ field }) => (
                           <FormItem className="space-y-3">
-                            <FormLabel className="text-sm font-medium">
-                              Lodging Type{" "}
-                              <span className="text-destructive">*</span>
-                            </FormLabel>
+                            <FormLabel className="text-sm font-medium">Lodging Type <span className="text-destructive">*</span></FormLabel>
                             <FormControl>
                               <RadioGroup
                                 onValueChange={field.onChange}
@@ -805,16 +591,11 @@ export default function Registration() {
                                 className="grid grid-cols-1 sm:grid-cols-3 gap-2"
                               >
                                 {["Airbnb", "Hostel", "Hotel"].map((type) => (
-                                  <FormItem
-                                    key={type}
-                                    className="flex items-center space-x-2 space-y-0 bg-white border rounded-lg p-3 cursor-pointer [&:has([data-state=checked])]:border-primary [&:has([data-state=checked])]:bg-primary/5"
-                                  >
+                                  <FormItem key={type} className="flex items-center space-x-2 space-y-0 bg-white border rounded-lg p-3 cursor-pointer [&:has([data-state=checked])]:border-primary [&:has([data-state=checked])]:bg-primary/5">
                                     <FormControl>
                                       <RadioGroupItem value={type} />
                                     </FormControl>
-                                    <FormLabel className="font-normal cursor-pointer text-sm w-full">
-                                      {type}
-                                    </FormLabel>
+                                    <FormLabel className="font-normal cursor-pointer text-sm w-full">{type}</FormLabel>
                                   </FormItem>
                                 ))}
                               </RadioGroup>
@@ -833,9 +614,7 @@ export default function Registration() {
                       <FormItem className="space-y-4">
                         <div className="flex items-center gap-2 text-primary mb-1">
                           <Utensils className="w-5 h-5" />
-                          <FormLabel className="text-base font-semibold">
-                            Feeding <span className="text-destructive">*</span>
-                          </FormLabel>
+                          <FormLabel className="text-base font-semibold">Feeding <span className="text-destructive">*</span></FormLabel>
                         </div>
                         <FormControl>
                           <RadioGroup
@@ -847,17 +626,13 @@ export default function Registration() {
                               <FormControl>
                                 <RadioGroupItem value="Church Feeding" />
                               </FormControl>
-                              <FormLabel className="font-semibold cursor-pointer w-full">
-                                Church Feeding
-                              </FormLabel>
+                              <FormLabel className="font-semibold cursor-pointer w-full">Church Feeding</FormLabel>
                             </FormItem>
                             <FormItem className="flex items-center space-x-3 space-y-0 bg-white border rounded-xl p-4 cursor-pointer [&:has([data-state=checked])]:border-secondary [&:has([data-state=checked])]:ring-1 [&:has([data-state=checked])]:ring-secondary">
                               <FormControl>
                                 <RadioGroupItem value="Self Feeding" />
                               </FormControl>
-                              <FormLabel className="font-semibold cursor-pointer w-full">
-                                Self Feeding
-                              </FormLabel>
+                              <FormLabel className="font-semibold cursor-pointer w-full">Self Feeding</FormLabel>
                             </FormItem>
                           </RadioGroup>
                         </FormControl>
@@ -873,10 +648,7 @@ export default function Registration() {
                       <FormItem className="space-y-4">
                         <div className="flex items-center gap-2 text-primary mb-1">
                           <Bus className="w-5 h-5" />
-                          <FormLabel className="text-base font-semibold">
-                            Transport{" "}
-                            <span className="text-destructive">*</span>
-                          </FormLabel>
+                          <FormLabel className="text-base font-semibold">Transport <span className="text-destructive">*</span></FormLabel>
                         </div>
                         <FormControl>
                           <RadioGroup
@@ -888,17 +660,13 @@ export default function Registration() {
                               <FormControl>
                                 <RadioGroupItem value="Church Bus" />
                               </FormControl>
-                              <FormLabel className="font-semibold cursor-pointer w-full">
-                                Church Bus
-                              </FormLabel>
+                              <FormLabel className="font-semibold cursor-pointer w-full">Church Bus</FormLabel>
                             </FormItem>
                             <FormItem className="flex items-center space-x-3 space-y-0 bg-white border rounded-xl p-4 cursor-pointer [&:has([data-state=checked])]:border-secondary [&:has([data-state=checked])]:ring-1 [&:has([data-state=checked])]:ring-secondary">
                               <FormControl>
                                 <RadioGroupItem value="Self Transport" />
                               </FormControl>
-                              <FormLabel className="font-semibold cursor-pointer w-full">
-                                Self Transport
-                              </FormLabel>
+                              <FormLabel className="font-semibold cursor-pointer w-full">Self Transport</FormLabel>
                             </FormItem>
                           </RadioGroup>
                         </FormControl>
@@ -913,17 +681,9 @@ export default function Registration() {
                     render={({ field }) => (
                       <FormItem>
                         <div className="flex items-center gap-2 text-primary mb-1">
-                          <FormLabel className="text-base font-semibold">
-                            Special Needs{" "}
-                            <span className="text-muted-foreground font-normal text-sm">
-                              (Optional)
-                            </span>
-                          </FormLabel>
+                          <FormLabel className="text-base font-semibold">Special Needs <span className="text-muted-foreground font-normal text-sm">(Optional)</span></FormLabel>
                         </div>
-                        <p className="text-sm text-muted-foreground -mt-1">
-                          Any special requirements for busing or rooming we
-                          should know about?
-                        </p>
+                        <p className="text-sm text-muted-foreground -mt-1">Any special requirements for busing or rooming we should know about?</p>
                         <FormControl>
                           <Textarea
                             placeholder="e.g. I need a ground-floor room, or I require a specific pickup point for the bus..."
@@ -938,20 +698,10 @@ export default function Registration() {
                 </div>
 
                 <div className="flex gap-3 mt-10">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={prevStep}
-                    className="h-12 px-4 rounded-xl"
-                    disabled={submitRegistration.isPending}
-                  >
+                  <Button type="button" variant="outline" onClick={prevStep} className="h-12 px-4 rounded-xl" disabled={submitRegistration.isPending}>
                     <ArrowLeft className="w-5 h-5" />
                   </Button>
-                  <Button
-                    type="submit"
-                    className="flex-1 h-12 text-lg rounded-xl"
-                    disabled={submitRegistration.isPending}
-                  >
+                  <Button type="submit" className="flex-1 h-12 text-lg rounded-xl" disabled={submitRegistration.isPending}>
                     {submitRegistration.isPending ? (
                       <>
                         <Loader2 className="w-5 h-5 mr-2 animate-spin" />
@@ -966,15 +716,13 @@ export default function Registration() {
                   </Button>
                 </div>
               </div>
+
             </form>
           </Form>
         </div>
       </div>
 
-      {/* Badge helper for Radix UI styled without importing */}
-      <style
-        dangerouslySetInnerHTML={{
-          __html: `
+      <style dangerouslySetInnerHTML={{__html: `
         .custom-scrollbar::-webkit-scrollbar {
           width: 4px;
         }
@@ -985,9 +733,7 @@ export default function Registration() {
           background: hsl(var(--border));
           border-radius: 4px;
         }
-      `,
-        }}
-      />
+      `}} />
     </div>
   );
 }
