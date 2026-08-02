@@ -248,7 +248,7 @@ export default function Registration() {
             </div>
             <div className="flex items-center gap-3">
               <MapPin className="w-4 h-4 text-secondary" />
-              <span>Sept 18–21, 2026</span>
+              <span>Sept 18-21, 2026</span>
             </div>
           </div>
 
@@ -276,7 +276,7 @@ export default function Registration() {
         <div className="absolute inset-0 bg-gradient-to-t from-primary via-primary/50 to-transparent" />
         <div className="relative z-10 flex flex-col justify-end p-12 text-white h-full max-w-2xl">
           <Badge className="bg-secondary text-secondary-foreground hover:bg-secondary w-fit mb-6 text-sm py-1.5 px-4 rounded-full border-none">
-            Sept 18–21, 2026
+            Sept 18-21, 2026
           </Badge>
           <h1 className="text-6xl font-serif font-bold leading-tight mb-4 text-white">
             Prepare to meet thy God.
@@ -307,17 +307,32 @@ export default function Registration() {
 
         <div className="flex-1 w-full max-w-xl mx-auto p-6 md:p-12 md:my-auto flex flex-col justify-center">
           <div className="mb-8 hidden md:block">
-            <h2 className="text-3xl font-bold text-foreground">Register</h2>
-            <p className="text-muted-foreground mt-2">
-              Takes less than 2 minutes.
-            </p>
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-3xl font-bold text-foreground">Register</h2>
+                <p className="text-muted-foreground mt-2">Takes less than 2 minutes.</p>
+              </div>
+              <a
+                href="/my-registration"
+                className="text-sm text-primary font-medium hover:underline whitespace-nowrap"
+              >
+                Already registered?
+              </a>
+            </div>
           </div>
 
-          <div className="md:hidden mb-6 flex justify-between items-end">
+          <div className="md:hidden mb-4 flex justify-between items-center">
             <h2 className="text-2xl font-bold text-foreground">Registration</h2>
-            <span className="text-sm font-medium text-secondary">
-              Step {step} of 3
-            </span>
+            <a
+              href="/my-registration"
+              className="text-xs text-primary font-medium hover:underline"
+            >
+              Already registered?
+            </a>
+          </div>
+
+          <div className="md:hidden mb-6 flex justify-end items-end">
+            <span className="text-sm font-medium text-secondary">Step {step} of 3</span>
           </div>
 
           <div className="flex gap-2 mb-8">
