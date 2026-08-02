@@ -279,10 +279,10 @@ export default function Registration() {
             Sept 18-21, 2026
           </Badge>
           <h1 className="text-6xl font-serif font-bold leading-tight mb-4 text-white">
-            Prepare to meet thy God.
+            Koinonia Camp 2026
           </h1>
           <p className="text-2xl text-primary-foreground/80 font-medium">
-            Koinonia Camp 2026
+            Transformation
           </p>
         </div>
       </div>
@@ -297,10 +297,10 @@ export default function Registration() {
           <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-primary/60 to-background" />
           <div className="absolute bottom-6 left-6 right-6">
             <h1 className="text-3xl font-serif font-bold text-white mb-2 leading-tight">
-              Koinonia Camp
+              Koinonia Camp 2026
             </h1>
             <p className="text-white/90 text-sm font-medium">
-              Prepare to meet thy God
+              Transformation
             </p>
           </div>
         </div>
