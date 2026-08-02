@@ -305,20 +305,21 @@ export default function Registration() {
           </div>
         </div>
 
-        <div className="flex-1 w-full max-w-xl mx-auto p-6 md:p-12 md:my-auto flex flex-col justify-center">
+          href="/my-registration"
+            className="flex items-center justify-between gap-2 mb-6 px-4 py-3 rounded-xl bg-primary/5 border border-primary/20 hover:bg-primary/10 transition-colors group"
+          >
+            <span className="text-sm font-medium text-primary">
+              Already registered? View your details →
+            </span>
+          </a>
+
           <div className="mb-8 hidden md:block">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-3xl font-bold text-foreground">Register</h2>
-                <p className="text-muted-foreground mt-2">Takes less than 2 minutes.</p>
-              </div>
-              <a
-                href="/my-registration"
-                className="text-sm text-primary font-medium hover:underline whitespace-nowrap"
-              >
-                Already registered?
-              </a>
-            </div>
+            <h2 className="text-3xl font-bold text-foreground">Register</h2>
+            <p className="text-muted-foreground mt-2">Takes less than 2 minutes.</p>
+          </div>
+
+          <div className="md:hidden mb-6">
+            <h2 className="text-2xl font-bold text-foreground">Registration</h2>
           </div>
 
           <div className="md:hidden mb-4 flex justify-between items-center">
