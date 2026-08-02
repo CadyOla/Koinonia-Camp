@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import {
   useListRegistrations,
   useGetRegistrationStats,
+  getGetRegistrationStatsQueryKey,
+  getListRegistrationsQueryKey,
 } from "@workspace/api-client-react";
 import { format } from "date-fns";
 import * as XLSX from "xlsx";
@@ -131,12 +133,15 @@ export default function AdminDashboard() {
   };
 
   const { data: stats, isLoading: isLoadingStats } = useGetRegistrationStats({
-    query: { enabled: authed },
+    query: { enabled: authed, queryKey: getGetRegistrationStatsQueryKey() },
     request: { credentials: "include" },
   });
   const { data: registrations, isLoading: isLoadingRegs } =
     useListRegistrations(queryParams, {
-      query: { enabled: authed },
+      query: {
+        enabled: authed,
+        queryKey: getListRegistrationsQueryKey(queryParams),
+      },
       request: { credentials: "include" },
     });
 
