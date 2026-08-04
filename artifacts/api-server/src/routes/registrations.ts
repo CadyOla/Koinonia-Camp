@@ -156,12 +156,17 @@ router.post("/registrations", async (req, res): Promise<void> => {
     }
 
     sendRegistrationSms(row.phoneNumber, row.fullName, row.referenceNumber).then(
-      (result) => {
+      async (result) => {
         if (!result.ok) {
           req.log.warn(
             { error: result.error, referenceNumber: row.referenceNumber },
             "SMS notification failed",
           );
+        } else {
+          await db
+            .update(registrationsTable)
+            .set({ smsSentAt: new Date() })
+            .where(eq(registrationsTable.id, row.id));
         }
       },
     );
