@@ -3,17 +3,27 @@
 // this expecting it to reject; check the return value's `ok` field instead.
 
 const ARKESEL_URL = "https://sms.arkesel.com/api/v2/sms/send";
+const LOOKUP_URL = "koinonia-camp-frontend.onrender.com/my-registration";
 
 /**
  * Normalizes a Ghanaian phone number to Arkesel's expected +233 format.
- * Accepts local format (0XXXXXXXXX) or already-international (+233XXXXXXXXX).
+ * Handles the formats registrants have actually been entering:
+ *   0245121811     (10 digits, leading 0)      -> +233245121811
+ *   245121811      (9 digits, no leading 0)    -> +233245121811
+ *   +233245121811  (already correct)           -> unchanged
+ *   233245121811   (country code, no +)        -> +233245121811
  */
 function toArkeselFormat(rawPhone: string): string {
   const trimmed = rawPhone.trim().replace(/[\s-]/g, "");
+
   if (trimmed.startsWith("+233")) return trimmed;
-  if (trimmed.startsWith("233")) return `+${trimmed}`;
-  if (trimmed.startsWith("0")) return `+233${trimmed.slice(1)}`;
-  return trimmed;
+  if (trimmed.startsWith("233") && trimmed.length === 12) return `+${trimmed}`;
+  if (trimmed.startsWith("0") && trimmed.length === 10) return `+233${trimmed.slice(1)}`;
+  if (/^\d{9}$/.test(trimmed)) return `+233${trimmed}`;
+
+  // Fallback: strip any leading zero/plus and prefix +233 as a best effort
+  const digitsOnly = trimmed.replace(/^\+?0*/, "");
+  return `+233${digitsOnly}`;
 }
 
 export async function sendRegistrationSms(
@@ -30,9 +40,9 @@ export async function sendRegistrationSms(
 
   const firstName = fullName.trim().split(/\s+/)[0] || "there";
   const message =
-    `Hi ${firstName}, your Koinonia Camp 2026 registration is confirmed! ` +
-    `Your reference number is ${referenceNumber}. Keep it safe -- you can ` +
-    `look up your details anytime using it.`;
+    `Hi ${firstName}, your Koinonia Camp '26 registration is confirmed!\n` +
+    `Ref: ${referenceNumber}\n` +
+    `Look up your details: ${LOOKUP_URL}`;
 
   try {
     const res = await fetch(ARKESEL_URL, {
