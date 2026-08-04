@@ -16,6 +16,7 @@ import {
   FileSpreadsheet,
   Lock,
   Loader2,
+  Send,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -105,6 +106,12 @@ export default function AdminDashboard() {
   const [checkingAuth, setCheckingAuth] = useState(true);
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounce(search, 500);
+  const [backfillLoading, setBackfillLoading] = useState(false);
+  const [backfillResult, setBackfillResult] = useState<{
+    total: number;
+    sent: number;
+    failed: number;
+  } | null>(null);
 
   const [filters, setFilters] = useState({
     branch: "all",
@@ -193,6 +200,36 @@ export default function AdminDashboard() {
     );
   };
 
+  const handleBackfillSms = async () => {
+    const confirmed = window.confirm(
+      "This will text every registrant who hasn't been sent an SMS yet. This uses real SMS credits and cannot be undone. Continue?",
+    );
+    if (!confirmed) return;
+
+    setBackfillLoading(true);
+    setBackfillResult(null);
+    try {
+      const res = await fetch(`${API_URL}/api/admin/backfill-sms`, {
+        method: "POST",
+        credentials: "include",
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setBackfillResult({
+          total: data.total,
+          sent: data.sent,
+          failed: data.failed,
+        });
+      } else {
+        alert("Backfill failed to start. Check the backend logs.");
+      }
+    } catch {
+      alert("Something went wrong. Please try again.");
+    } finally {
+      setBackfillLoading(false);
+    }
+  };
+
   const StatCard = ({ title, value, icon: Icon, colorClass }: any) => (
     <Card className="border-none shadow-sm hover-elevate transition-all">
       <CardContent className="p-6 flex items-center justify-between">
@@ -237,13 +274,35 @@ export default function AdminDashboard() {
               Koinonia 2026 Registration Overview
             </p>
           </div>
-          <Button
-            onClick={handleExport}
-            className="bg-primary hover:bg-primary/90 text-white rounded-xl shadow-sm"
-          >
-            <FileSpreadsheet className="w-4 h-4 mr-2" />
-            Export to Excel
-          </Button>
+          <div className="flex flex-col items-end gap-2">
+            <div className="flex gap-2">
+              <Button
+                onClick={handleBackfillSms}
+                disabled={backfillLoading}
+                variant="outline"
+                className="rounded-xl shadow-sm"
+              >
+                {backfillLoading ? (
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                ) : (
+                  <Send className="w-4 h-4 mr-2" />
+                )}
+                Send SMS Backfill
+              </Button>
+              <Button
+                onClick={handleExport}
+                className="bg-primary hover:bg-primary/90 text-white rounded-xl shadow-sm"
+              >
+                <FileSpreadsheet className="w-4 h-4 mr-2" />
+                Export to Excel
+              </Button>
+            </div>
+            {backfillResult && (
+              <p className="text-xs text-muted-foreground">
+                Backfill done: {backfillResult.sent} sent, {backfillResult.failed} failed, out of {backfillResult.total}.
+              </p>
+            )}
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
