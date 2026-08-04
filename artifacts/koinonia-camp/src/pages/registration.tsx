@@ -241,6 +241,10 @@ export default function Registration() {
             </p>
           </div>
 
+          <p className="text-xs text-muted-foreground mb-6 -mt-4">
+            We've also texted your reference number to your phone. Don't see it? Check your spam or blocked messages folder.
+          </p>
+
           <div className="space-y-3 text-sm text-foreground bg-gray-50 rounded-xl p-5 text-left border border-gray-100">
             <div className="flex items-center gap-3">
               <Tent className="w-4 h-4 text-secondary" />
