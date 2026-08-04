@@ -1,5 +1,6 @@
 import { Router, type IRouter } from "express";
 import { requireAdmin } from "./admin-auth";
+import { sendRegistrationSms } from "../lib/arkesel";
 import { eq, and, ilike, or, sql } from "drizzle-orm";
 import { db, registrationsTable } from "@workspace/db";
 import {
@@ -154,6 +155,16 @@ router.post("/registrations", async (req, res): Promise<void> => {
       row = inserted;
     }
 
+    sendRegistrationSms(row.phoneNumber, row.fullName, row.referenceNumber).then(
+      (result) => {
+        if (!result.ok) {
+          req.log.warn(
+            { error: result.error, referenceNumber: row.referenceNumber },
+            "SMS notification failed",
+          );
+        }
+      },
+    );
     req.log.info(
       { referenceNumber: row.referenceNumber },
       "Registration submitted",
