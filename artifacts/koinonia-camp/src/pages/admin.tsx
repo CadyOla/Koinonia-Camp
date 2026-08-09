@@ -4,6 +4,7 @@ import {
   useGetRegistrationStats,
   getGetRegistrationStatsQueryKey,
   getListRegistrationsQueryKey,
+  setAuthTokenGetter,
 } from "@workspace/api-client-react";
 import { format } from "date-fns";
 import * as XLSX from "xlsx";
@@ -41,6 +42,38 @@ import { useDebounce } from "@/hooks/use-debounce";
 
 const API_URL = import.meta.env.VITE_API_URL || "";
 
+// ---------------------------------------------------------------------------
+// Bearer token auth (fixes Safari/iOS blocking cross-site cookies between
+// the frontend and backend, which live on different onrender.com subdomains)
+// ---------------------------------------------------------------------------
+const TOKEN_STORAGE_KEY = "admin_token";
+
+function getStoredToken(): string | null {
+  try {
+    return localStorage.getItem(TOKEN_STORAGE_KEY);
+  } catch {
+    return null;
+  }
+}
+
+function setStoredToken(token: string | null) {
+  try {
+    if (token) {
+      localStorage.setItem(TOKEN_STORAGE_KEY, token);
+    } else {
+      localStorage.removeItem(TOKEN_STORAGE_KEY);
+    }
+  } catch {
+    // localStorage unavailable (e.g. private mode) — auth will fall back
+    // to the cookie path on browsers where that works.
+  }
+}
+
+// Registers the token getter once at module load so every generated
+// hook (useGetRegistrationStats, useListRegistrations, etc.) automatically
+// attaches "Authorization: Bearer <token>" to its requests.
+setAuthTokenGetter(() => getStoredToken());
+
 function AdminLogin({ onSuccess }: { onSuccess: () => void }) {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -58,6 +91,10 @@ function AdminLogin({ onSuccess }: { onSuccess: () => void }) {
         body: JSON.stringify({ password }),
       });
       if (res.ok) {
+        const data = await res.json();
+        if (data.token) {
+          setStoredToken(data.token);
+        }
         onSuccess();
       } else {
         setError("Incorrect password");
@@ -121,10 +158,22 @@ export default function AdminDashboard() {
   });
 
   useEffect(() => {
-    // Try fetching stats once to see if we're already logged in (cookie present)
-    fetch(`${API_URL}/api/registrations/stats`, { credentials: "include" })
+    // Try fetching stats once to see if we're already logged in.
+    // Sends the stored bearer token (if any) so this works on Safari,
+    // where the cross-site session cookie is blocked. Falls back to the
+    // cookie automatically on browsers that do support it.
+    const token = getStoredToken();
+    fetch(`${API_URL}/api/registrations/stats`, {
+      credentials: "include",
+      headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+    })
       .then((res) => {
-        if (res.ok) setAuthed(true);
+        if (res.ok) {
+          setAuthed(true);
+        } else {
+          // Stale/invalid token — clear it so the login screen shows cleanly.
+          setStoredToken(null);
+        }
       })
       .finally(() => setCheckingAuth(false));
   }, []);
@@ -209,9 +258,11 @@ export default function AdminDashboard() {
     setBackfillLoading(true);
     setBackfillResult(null);
     try {
+      const token = getStoredToken();
       const res = await fetch(`${API_URL}/api/admin/backfill-sms`, {
         method: "POST",
         credentials: "include",
+        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
       });
       if (res.ok) {
         const data = await res.json();
