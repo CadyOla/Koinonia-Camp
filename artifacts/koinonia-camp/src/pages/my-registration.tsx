@@ -2,9 +2,11 @@ import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Loader2, Search, Tent, Bus, Utensils, User, ExternalLink } from "lucide-react";
+import { Loader2, Search, Tent, Bus, Utensils, User } from "lucide-react";
 
 const API_URL = import.meta.env.VITE_API_URL || "";
+
+// Where residents without a synced room go to pick one on HQ's site.
 const HQ_ROOM_SELECTION_URL = "https://koinoniacamp.com/register/accra-main/";
 
 interface RegistrationData {
@@ -15,6 +17,7 @@ interface RegistrationData {
   lodgingType?: string | null;
   roomAssignment?: string | null;
   busAssignment?: string | null;
+  paymentStatus?: string | null;
   feedingPreference: string;
   transportPreference: string;
   ageCategory: string;
@@ -52,6 +55,9 @@ export default function MyRegistration() {
   if (data) {
     const needsRoomSelection =
       data.accommodationPreference === "Resident" && !data.roomAssignment;
+    const needsPayment =
+      data.accommodationPreference === "Non-Resident" &&
+      data.paymentStatus?.toLowerCase() !== "completed";
 
     return (
       <div className="min-h-[100dvh] bg-gray-50 flex items-center justify-center p-4">
@@ -74,13 +80,22 @@ export default function MyRegistration() {
                 href={HQ_ROOM_SELECTION_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-between gap-3 bg-primary/5 border border-primary/20 text-primary rounded-lg px-4 py-3 mb-6 hover:bg-primary/10 transition-colors"
+                className="block mb-6 rounded-lg bg-amber-50 border border-amber-200 px-4 py-3 text-sm text-amber-900 hover:bg-amber-100 transition-colors"
               >
-                <span className="text-sm font-medium">
-                  You haven't picked a room yet — Tap here to select and pay GHs100 to register!
-                  Successful registration will display your room here after 15mins.
-                </span>
-                <ExternalLink className="w-4 h-4 flex-shrink-0" />
+                <span className="font-medium">Choose your room</span> — tap to
+                select and pay GHS100 to register.
+              </a>
+            )}
+
+            {needsPayment && (
+              <a
+                href={HQ_ROOM_SELECTION_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block mb-6 rounded-lg bg-amber-50 border border-amber-200 px-4 py-3 text-sm text-amber-900 hover:bg-amber-100 transition-colors"
+              >
+                <span className="font-medium">Complete your registration</span>{" "}
+                — tap to pay GHS100.
               </a>
             )}
 
