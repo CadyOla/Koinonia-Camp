@@ -18,7 +18,7 @@ import {
   Lock,
   Loader2,
   Send,
-  RefreshCw,
+  BellRing,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -150,12 +150,11 @@ export default function AdminDashboard() {
     sent: number;
     failed: number;
   } | null>(null);
-  const [hqSyncLoading, setHqSyncLoading] = useState(false);
-  const [hqSyncResult, setHqSyncResult] = useState<{
-    fetched: number;
-    matched: number;
-    updated: number;
-    unmatched: number;
+  const [roomInviteLoading, setRoomInviteLoading] = useState(false);
+  const [roomInviteResult, setRoomInviteResult] = useState<{
+    total: number;
+    sent: number;
+    failed: number;
   } | null>(null);
 
   const [filters, setFilters] = useState({
@@ -289,32 +288,35 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleHqSync = async () => {
-    setHqSyncLoading(true);
-    setHqSyncResult(null);
+  const handleRoomInviteSms = async () => {
+    const confirmed = window.confirm(
+      "This will text every Accra Main resident who hasn't picked a room yet, inviting them to select one. This uses real SMS credits and cannot be undone. Continue?",
+    );
+    if (!confirmed) return;
+
+    setRoomInviteLoading(true);
+    setRoomInviteResult(null);
     try {
       const token = getStoredToken();
-      const res = await fetch(`${API_URL}/api/admin/sync-hq-registrations`, {
+      const res = await fetch(`${API_URL}/api/admin/send-room-invite-sms`, {
         method: "POST",
         credentials: "include",
         headers: token ? { Authorization: `Bearer ${token}` } : undefined,
       });
       if (res.ok) {
         const data = await res.json();
-        setHqSyncResult({
-          fetched: data.fetched,
-          matched: data.matched,
-          updated: data.updated,
-          unmatched: data.unmatched,
+        setRoomInviteResult({
+          total: data.total,
+          sent: data.sent,
+          failed: data.failed,
         });
       } else {
-        const err = await res.json().catch(() => ({}));
-        alert(`HQ sync failed: ${err.error || "Check the backend logs."}`);
+        alert("Room invite send failed to start. Check the backend logs.");
       }
     } catch {
       alert("Something went wrong. Please try again.");
     } finally {
-      setHqSyncLoading(false);
+      setRoomInviteLoading(false);
     }
   };
 
@@ -365,19 +367,6 @@ export default function AdminDashboard() {
           <div className="flex flex-col items-end gap-2">
             <div className="flex flex-wrap gap-2 justify-end">
               <Button
-                onClick={handleHqSync}
-                disabled={hqSyncLoading}
-                variant="outline"
-                className="rounded-xl shadow-sm"
-              >
-                {hqSyncLoading ? (
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                ) : (
-                  <RefreshCw className="w-4 h-4 mr-2" />
-                )}
-                Sync HQ Rooms
-              </Button>
-              <Button
                 onClick={handleBackfillSms}
                 disabled={backfillLoading}
                 variant="outline"
@@ -391,6 +380,19 @@ export default function AdminDashboard() {
                 Send SMS Backfill
               </Button>
               <Button
+                onClick={handleRoomInviteSms}
+                disabled={roomInviteLoading}
+                variant="outline"
+                className="rounded-xl shadow-sm"
+              >
+                {roomInviteLoading ? (
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                ) : (
+                  <BellRing className="w-4 h-4 mr-2" />
+                )}
+                Invite to Select Room
+              </Button>
+              <Button
                 onClick={handleExport}
                 className="bg-primary hover:bg-primary/90 text-white rounded-xl shadow-sm"
               >
@@ -398,14 +400,14 @@ export default function AdminDashboard() {
                 Export to Excel
               </Button>
             </div>
-            {hqSyncResult && (
-              <p className="text-xs text-muted-foreground">
-                HQ sync done: {hqSyncResult.fetched} fetched, {hqSyncResult.matched} matched, {hqSyncResult.updated} updated, {hqSyncResult.unmatched} unmatched.
-              </p>
-            )}
             {backfillResult && (
               <p className="text-xs text-muted-foreground">
                 Backfill done: {backfillResult.sent} sent, {backfillResult.failed} failed, out of {backfillResult.total}.
+              </p>
+            )}
+            {roomInviteResult && (
+              <p className="text-xs text-muted-foreground">
+                Room invites done: {roomInviteResult.sent} sent, {roomInviteResult.failed} failed, out of {roomInviteResult.total}.
               </p>
             )}
           </div>
