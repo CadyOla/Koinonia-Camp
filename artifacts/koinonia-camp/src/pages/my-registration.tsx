@@ -78,6 +78,7 @@ export default function MyRegistration() {
               >
                 <span className="text-sm font-medium">
                   You haven't picked a room yet — Tap here to select and pay GHs100 to register!
+                  Successful registration will display your room here after 15mins.
                 </span>
                 <ExternalLink className="w-4 h-4 flex-shrink-0" />
               </a>
