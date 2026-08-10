@@ -77,7 +77,7 @@ export default function MyRegistration() {
                 className="flex items-center justify-between gap-3 bg-primary/5 border border-primary/20 text-primary rounded-lg px-4 py-3 mb-6 hover:bg-primary/10 transition-colors"
               >
                 <span className="text-sm font-medium">
-                  Choose your room — tap to select and pay
+                  You haven't picked a room yet — Tap here to select and pay GHs100 to register!
                 </span>
                 <ExternalLink className="w-4 h-4 flex-shrink-0" />
               </a>
