@@ -2,9 +2,10 @@ import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Loader2, Search, Tent, Bus, Utensils, User } from "lucide-react";
+import { Loader2, Search, Tent, Bus, Utensils, User, ExternalLink } from "lucide-react";
 
 const API_URL = import.meta.env.VITE_API_URL || "";
+const HQ_ROOM_SELECTION_URL = "https://koinoniacamp.com/register/accra-main/";
 
 interface RegistrationData {
   referenceNumber: string;
@@ -49,6 +50,9 @@ export default function MyRegistration() {
   };
 
   if (data) {
+    const needsRoomSelection =
+      data.accommodationPreference === "Resident" && !data.roomAssignment;
+
     return (
       <div className="min-h-[100dvh] bg-gray-50 flex items-center justify-center p-4">
         <Card className="max-w-md w-full border-none shadow-sm">
@@ -64,6 +68,20 @@ export default function MyRegistration() {
                 </p>
               </div>
             </div>
+
+            {needsRoomSelection && (
+              <a
+                href={HQ_ROOM_SELECTION_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-between gap-3 bg-primary/5 border border-primary/20 text-primary rounded-lg px-4 py-3 mb-6 hover:bg-primary/10 transition-colors"
+              >
+                <span className="text-sm font-medium">
+                  Choose your room — tap to select and pay
+                </span>
+                <ExternalLink className="w-4 h-4 flex-shrink-0" />
+              </a>
+            )}
 
             <div className="space-y-4">
               <div className="flex items-center justify-between border-b pb-3">
