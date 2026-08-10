@@ -1,6 +1,7 @@
 import { pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
+
 export const registrationsTable = pgTable("registrations", {
   id: serial("id").primaryKey(),
   referenceNumber: text("reference_number").notNull().unique(),
@@ -24,13 +25,21 @@ export const registrationsTable = pgTable("registrations", {
   roomAssignment: text("room_assignment"),
   busAssignment: text("bus_assignment"),
   smsSentAt: timestamp("sms_sent_at", { withTimezone: true }),
+  // HQ (koinoniacamp.com / Eventer) room-selection sync tracking.
+  // Populated by POST /admin/sync-hq-registrations. Not exposed via the
+  // public API response schemas (they're stripped automatically since
+  // GetRegistrationResponse/ListRegistrationsResponse aren't .strict()).
+  hqBookingId: text("hq_booking_id"),
+  hqSyncedAt: timestamp("hq_synced_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow().$onUpdate(() => new Date()),
 });
+
 export const insertRegistrationSchema = createInsertSchema(registrationsTable).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
 });
+
 export type InsertRegistration = z.infer<typeof insertRegistrationSchema>;
 export type Registration = typeof registrationsTable.$inferSelect;
