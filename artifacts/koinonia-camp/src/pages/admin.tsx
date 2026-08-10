@@ -18,6 +18,7 @@ import {
   Lock,
   Loader2,
   Send,
+  RefreshCw,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -148,6 +149,13 @@ export default function AdminDashboard() {
     total: number;
     sent: number;
     failed: number;
+  } | null>(null);
+  const [hqSyncLoading, setHqSyncLoading] = useState(false);
+  const [hqSyncResult, setHqSyncResult] = useState<{
+    fetched: number;
+    matched: number;
+    updated: number;
+    unmatched: number;
   } | null>(null);
 
   const [filters, setFilters] = useState({
@@ -281,6 +289,35 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleHqSync = async () => {
+    setHqSyncLoading(true);
+    setHqSyncResult(null);
+    try {
+      const token = getStoredToken();
+      const res = await fetch(`${API_URL}/api/admin/sync-hq-registrations`, {
+        method: "POST",
+        credentials: "include",
+        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setHqSyncResult({
+          fetched: data.fetched,
+          matched: data.matched,
+          updated: data.updated,
+          unmatched: data.unmatched,
+        });
+      } else {
+        const err = await res.json().catch(() => ({}));
+        alert(`HQ sync failed: ${err.error || "Check the backend logs."}`);
+      }
+    } catch {
+      alert("Something went wrong. Please try again.");
+    } finally {
+      setHqSyncLoading(false);
+    }
+  };
+
   const StatCard = ({ title, value, icon: Icon, colorClass }: any) => (
     <Card className="border-none shadow-sm hover-elevate transition-all">
       <CardContent className="p-6 flex items-center justify-between">
@@ -326,7 +363,20 @@ export default function AdminDashboard() {
             </p>
           </div>
           <div className="flex flex-col items-end gap-2">
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2 justify-end">
+              <Button
+                onClick={handleHqSync}
+                disabled={hqSyncLoading}
+                variant="outline"
+                className="rounded-xl shadow-sm"
+              >
+                {hqSyncLoading ? (
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                ) : (
+                  <RefreshCw className="w-4 h-4 mr-2" />
+                )}
+                Sync HQ Rooms
+              </Button>
               <Button
                 onClick={handleBackfillSms}
                 disabled={backfillLoading}
@@ -348,6 +398,11 @@ export default function AdminDashboard() {
                 Export to Excel
               </Button>
             </div>
+            {hqSyncResult && (
+              <p className="text-xs text-muted-foreground">
+                HQ sync done: {hqSyncResult.fetched} fetched, {hqSyncResult.matched} matched, {hqSyncResult.updated} updated, {hqSyncResult.unmatched} unmatched.
+              </p>
+            )}
             {backfillResult && (
               <p className="text-xs text-muted-foreground">
                 Backfill done: {backfillResult.sent} sent, {backfillResult.failed} failed, out of {backfillResult.total}.
