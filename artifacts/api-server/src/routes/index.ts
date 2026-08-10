@@ -1,10 +1,12 @@
 import { Router, type IRouter } from "express";
+import adminHqSyncRouter from "./admin-hq-sync";
 import healthRouter from "./health";
 import registrationsRouter from "./registrations";
 import adminAuthRouter from "./admin-auth";
 import lookupRouter from "./lookup";
 import adminSmsBackfillRouter from "./admin-sms-backfill";
 const router: IRouter = Router();
+router.use(adminHqSyncRouter);
 router.use(healthRouter);
 router.use(registrationsRouter);
 router.use(adminAuthRouter);
