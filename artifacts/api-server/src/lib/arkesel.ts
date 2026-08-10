@@ -99,3 +99,19 @@ export async function sendRoomSelectionSms(
 
   return sendSms(phoneNumber, message);
 }
+
+// ---------------------------------------------------------------------------
+// Payment reminder SMS (NEW) — for Non-Residents, who don't select a room
+// but still owe the mandatory GHS100 registration fee. Separate wording
+// (no "room" language) and its own DB tracking column (payment_sms_sent_at).
+// ---------------------------------------------------------------------------
+export async function sendPaymentReminderSms(
+  phoneNumber: string,
+  fullName: string,
+): Promise<{ ok: boolean; error?: string }> {
+  const message =
+    `Hi ${firstNameOf(fullName)}, complete your Koinonia Camp '26 registration ` +
+    `by paying GHS100 here: ${ROOM_SELECTION_URL} \u2013 GFC Accra`;
+
+  return sendSms(phoneNumber, message);
+}
