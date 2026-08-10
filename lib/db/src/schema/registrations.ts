@@ -25,17 +25,23 @@ export const registrationsTable = pgTable("registrations", {
   roomAssignment: text("room_assignment"),
   busAssignment: text("bus_assignment"),
   smsSentAt: timestamp("sms_sent_at", { withTimezone: true }),
-  // HQ (koinoniacamp.com / Eventer) room-selection sync tracking.
-  // Populated by POST /admin/sync-hq-registrations. Not exposed via the
-  // public API response schemas (they're stripped automatically since
-  // GetRegistrationResponse/ListRegistrationsResponse aren't .strict()).
+  // --- HQ sync tracking (internal only, not exposed via the API/OpenAPI spec) ---
   hqBookingId: text("hq_booking_id"),
   hqSyncedAt: timestamp("hq_synced_at", { withTimezone: true }),
-  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
-  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow().$onUpdate(() => new Date()),
+  // --- Room-selection invite SMS tracking (internal only) ---
+  roomSmsSentAt: timestamp("room_sms_sent_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .notNull()
+    .defaultNow()
+    .$onUpdate(() => new Date()),
 });
 
-export const insertRegistrationSchema = createInsertSchema(registrationsTable).omit({
+export const insertRegistrationSchema = createInsertSchema(
+  registrationsTable,
+).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
