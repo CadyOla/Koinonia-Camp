@@ -30,6 +30,8 @@ export const registrationsTable = pgTable("registrations", {
   hqSyncedAt: timestamp("hq_synced_at", { withTimezone: true }),
   // --- Room-selection invite SMS tracking (internal only) ---
   roomSmsSentAt: timestamp("room_sms_sent_at", { withTimezone: true }),
+  // --- Payment reminder SMS tracking for Non-Residents (internal only) ---
+  paymentSmsSentAt: timestamp("payment_sms_sent_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),
