@@ -82,8 +82,8 @@ export default function MyRegistration() {
                 rel="noopener noreferrer"
                 className="block mb-6 rounded-lg bg-amber-50 border border-amber-200 px-4 py-3 text-sm text-amber-900 hover:bg-amber-100 transition-colors"
               >
-                <span className="font-medium">Choose your room</span> — tap to
-                select and pay GHS100 to register.
+                <span className="font-medium">You haven't picked a room yet</span> — Tap here to select and pay GHs100 to register! 
+            Successful registration will display your room here after 15mins.
               </a>
             )}
 
@@ -94,8 +94,8 @@ export default function MyRegistration() {
                 rel="noopener noreferrer"
                 className="block mb-6 rounded-lg bg-amber-50 border border-amber-200 px-4 py-3 text-sm text-amber-900 hover:bg-amber-100 transition-colors"
               >
-                <span className="font-medium">Complete your registration</span>{" "}
-                — tap to pay GHS100.
+                <span className="font-medium">Complete your registration for Koinonia '26</span>{" "}
+                — tap to register and pay GHS100!
               </a>
             )}
 
