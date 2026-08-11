@@ -10,7 +10,7 @@ const HQ_SITE_URL = process.env.HQ_SITE_URL || "";
 // The Eventer event_id for this branch's registration, e.g. "422" for Accra Main
 const HQ_EVENT_ID = process.env.HQ_EVENT_ID || "";
 // Bearer API key shown in the working curl command, e.g. evt_reg_...
-const HQ_API_KEY = process.env.HQ_API_KEY || "";
+const HQ_API_KEY = process.env.HQ_EVENTER_API_KEY || "";
 
 /**
  * Normalizes a phone number for matching purposes: strips everything but
@@ -152,7 +152,7 @@ router.post(
     if (!HQ_SITE_URL || !HQ_EVENT_ID || !HQ_API_KEY) {
       res.status(500).json({
         error:
-          "HQ_SITE_URL, HQ_EVENT_ID, and HQ_API_KEY env vars must all be set before syncing.",
+          "HQ_SITE_URL, HQ_EVENT_ID, and HQ_EVENTER_API_KEY env vars must all be set before syncing.",
       });
       return;
     }
