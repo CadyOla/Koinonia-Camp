@@ -273,6 +273,9 @@ components:
         - selfFeeding
         - churchBus
         - selfTransport
+        - successfullyRegistered
+        - successfullyRegisteredResident
+        - successfullyRegisteredNonResident
         - byBranch
         - byMinistry
       properties:
@@ -290,6 +293,18 @@ components:
           type: integer
         selfTransport:
           type: integer
+        successfullyRegistered:
+          type: integer
+          description: >
+            Count of registrants who have paid the GHS100 fee — for
+            Residents, this also requires a synced room assignment; for
+            Non-Residents, a completed payment alone counts.
+        successfullyRegisteredResident:
+          type: integer
+          description: Residents included in successfullyRegistered.
+        successfullyRegisteredNonResident:
+          type: integer
+          description: Non-Residents included in successfullyRegistered.
         byBranch:
           type: array
           items:
