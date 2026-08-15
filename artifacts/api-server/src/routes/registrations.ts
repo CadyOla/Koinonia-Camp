@@ -220,6 +220,23 @@ router.get(
       (r) => r.transportPreference === "Self Transport",
     ).length;
 
+    // "Successfully registered": paid the GHS100 fee, and — for Residents
+    // specifically — also picked an actual room. Non-Residents only need
+    // the completed payment, since they don't select a room at all.
+    const successfullyRegisteredResident = rows.filter(
+      (r) =>
+        r.accommodationPreference === "Resident" &&
+        r.paymentStatus?.toLowerCase() === "completed" &&
+        Boolean(r.roomAssignment),
+    ).length;
+    const successfullyRegisteredNonResident = rows.filter(
+      (r) =>
+        r.accommodationPreference === "Non-Resident" &&
+        r.paymentStatus?.toLowerCase() === "completed",
+    ).length;
+    const successfullyRegistered =
+      successfullyRegisteredResident + successfullyRegisteredNonResident;
+
     // Branch breakdown
     const branchMap = new Map<string, number>();
     for (const r of rows) {
@@ -249,6 +266,9 @@ router.get(
       selfFeeding,
       churchBus,
       selfTransport,
+      successfullyRegistered,
+      successfullyRegisteredResident,
+      successfullyRegisteredNonResident,
       byBranch,
       byMinistry,
     };
