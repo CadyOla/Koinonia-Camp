@@ -88,6 +88,12 @@ export interface RegistrationStats {
   selfFeeding: number;
   churchBus: number;
   selfTransport: number;
+  /** Count of registrants who have paid the GHS100 fee — for Residents, this also requires a synced room assignment; for Non-Residents, a completed payment alone counts. */
+  successfullyRegistered: number;
+  /** Residents included in successfullyRegistered. */
+  successfullyRegisteredResident: number;
+  /** Non-Residents included in successfullyRegistered. */
+  successfullyRegisteredNonResident: number;
   byBranch: CountByLabel[];
   byMinistry: CountByLabel[];
 }

@@ -123,6 +123,9 @@ export const GetRegistrationStatsResponse = zod.object({
   "selfFeeding": zod.number(),
   "churchBus": zod.number(),
   "selfTransport": zod.number(),
+  "successfullyRegistered": zod.number().describe('Count of registrants who have paid the GHS100 fee — for Residents, this also requires a synced room assignment; for Non-Residents, a completed payment alone counts.\n'),
+  "successfullyRegisteredResident": zod.number().describe('Residents included in successfullyRegistered.'),
+  "successfullyRegisteredNonResident": zod.number().describe('Non-Residents included in successfullyRegistered.'),
   "byBranch": zod.array(zod.object({
   "label": zod.string(),
   "count": zod.number()
