@@ -26,6 +26,12 @@ function toApiRegistration(row: typeof registrationsTable.$inferSelect) {
     ministries: row.ministries ? row.ministries.split(",").filter(Boolean) : [],
     createdAt: row.createdAt.toISOString(),
     updatedAt: row.updatedAt.toISOString(),
+    smsSentAt: row.smsSentAt ? row.smsSentAt.toISOString() : null,
+    hqSyncedAt: row.hqSyncedAt ? row.hqSyncedAt.toISOString() : null,
+    roomSmsSentAt: row.roomSmsSentAt ? row.roomSmsSentAt.toISOString() : null,
+    paymentSmsSentAt: row.paymentSmsSentAt
+      ? row.paymentSmsSentAt.toISOString()
+      : null,
   };
 }
 
