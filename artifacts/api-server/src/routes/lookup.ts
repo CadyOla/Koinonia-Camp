@@ -19,6 +19,12 @@ function toApiRegistration(row: typeof registrationsTable.$inferSelect) {
     ministries: row.ministries ? row.ministries.split(",").filter(Boolean) : [],
     createdAt: row.createdAt.toISOString(),
     updatedAt: row.updatedAt.toISOString(),
+    smsSentAt: row.smsSentAt ? row.smsSentAt.toISOString() : null,
+    hqSyncedAt: row.hqSyncedAt ? row.hqSyncedAt.toISOString() : null,
+    roomSmsSentAt: row.roomSmsSentAt ? row.roomSmsSentAt.toISOString() : null,
+    paymentSmsSentAt: row.paymentSmsSentAt
+      ? row.paymentSmsSentAt.toISOString()
+      : null,
   };
 }
 
@@ -26,8 +32,13 @@ router.get(
   "/my-registration/:referenceNumber",
   lookupLimiter,
   async (req, res): Promise<void> => {
-    const raw = req.params.referenceNumber?.trim().toUpperCase();
+    // This data changes over time (room/payment sync, admin edits) and is
+    // looked up repeatedly by the same person, so make sure every request
+    // hits the DB rather than a cached response — stale cached data here
+    // would show someone an outdated room/payment status.
+    res.set("Cache-Control", "no-store");
 
+    const raw = req.params.referenceNumber?.trim().toUpperCase();
     if (!raw) {
       res.status(400).json({ error: "Reference number is required" });
       return;
