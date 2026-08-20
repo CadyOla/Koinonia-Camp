@@ -36,6 +36,16 @@ export interface Registration {
   roomAssignment?: string | null;
   /** @nullable */
   busAssignment?: string | null;
+  /** @nullable */
+  smsSentAt?: string | null;
+  /** @nullable */
+  hqBookingId?: string | null;
+  /** @nullable */
+  hqSyncedAt?: string | null;
+  /** @nullable */
+  roomSmsSentAt?: string | null;
+  /** @nullable */
+  paymentSmsSentAt?: string | null;
   createdAt: string;
   updatedAt: string;
 }

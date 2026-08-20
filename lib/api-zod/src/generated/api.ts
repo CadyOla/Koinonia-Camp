@@ -50,6 +50,11 @@ export const ListRegistrationsResponseItem = zod.object({
   "paymentStatus": zod.string().nullish(),
   "roomAssignment": zod.string().nullish(),
   "busAssignment": zod.string().nullish(),
+  "smsSentAt": zod.string().nullish(),
+  "hqBookingId": zod.string().nullish(),
+  "hqSyncedAt": zod.string().nullish(),
+  "roomSmsSentAt": zod.string().nullish(),
+  "paymentSmsSentAt": zod.string().nullish(),
   "createdAt": zod.string(),
   "updatedAt": zod.string()
 })
@@ -107,6 +112,11 @@ export const SubmitRegistrationResponse = zod.object({
   "paymentStatus": zod.string().nullish(),
   "roomAssignment": zod.string().nullish(),
   "busAssignment": zod.string().nullish(),
+  "smsSentAt": zod.string().nullish(),
+  "hqBookingId": zod.string().nullish(),
+  "hqSyncedAt": zod.string().nullish(),
+  "roomSmsSentAt": zod.string().nullish(),
+  "paymentSmsSentAt": zod.string().nullish(),
   "createdAt": zod.string(),
   "updatedAt": zod.string()
 })
@@ -166,6 +176,11 @@ export const GetRegistrationResponse = zod.object({
   "paymentStatus": zod.string().nullish(),
   "roomAssignment": zod.string().nullish(),
   "busAssignment": zod.string().nullish(),
+  "smsSentAt": zod.string().nullish(),
+  "hqBookingId": zod.string().nullish(),
+  "hqSyncedAt": zod.string().nullish(),
+  "roomSmsSentAt": zod.string().nullish(),
+  "paymentSmsSentAt": zod.string().nullish(),
   "createdAt": zod.string(),
   "updatedAt": zod.string()
 })
