@@ -95,7 +95,7 @@ export async function sendRoomSelectionSms(
 ): Promise<{ ok: boolean; error?: string }> {
   const message =
     `Hi ${firstNameOf(fullName)}, select your Koinonia Camp '26 room here: ` +
-    `${ROOM_SELECTION_URL} \u2013 GFC Accra`;
+    `${ROOM_SELECTION_URL} (ignore if selected) \u2013 GFC Accra`;
 
   return sendSms(phoneNumber, message);
 }
@@ -110,8 +110,8 @@ export async function sendPaymentReminderSms(
   fullName: string,
 ): Promise<{ ok: boolean; error?: string }> {
   const message =
-    `Hi ${firstNameOf(fullName)}, complete your Koinonia Camp '26 registration ` +
-    `by paying GHS100 here: ${ROOM_SELECTION_URL} \u2013 GFC Accra`;
+    `Hi ${firstNameOf(fullName)}, pay your Koinonia Camp '26 GHS100 registration fee here: ` +
+    `${ROOM_SELECTION_URL} (ignore if paid) \u2013 GFC Accra`;
 
   return sendSms(phoneNumber, message);
 }
