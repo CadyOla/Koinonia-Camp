@@ -82,6 +82,7 @@ router.post(
       mealSaturdayEvening: updated.mealSaturdayEvening,
       mealSundayAfternoon: updated.mealSundayAfternoon,
       mealSundayEvening: updated.mealSundayEvening,
+      mealMondayBrunch: updated.mealMondayBrunch,
       mealSelectionsSubmittedAt: updated.mealSelectionsSubmittedAt?.toISOString() ?? null,
     });
   },
