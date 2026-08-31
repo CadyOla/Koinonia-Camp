@@ -25,6 +25,9 @@ function toApiRegistration(row: typeof registrationsTable.$inferSelect) {
     paymentSmsSentAt: row.paymentSmsSentAt
       ? row.paymentSmsSentAt.toISOString()
       : null,
+    mealSelectionsSubmittedAt: row.mealSelectionsSubmittedAt
+      ? row.mealSelectionsSubmittedAt.toISOString()
+      : null,
   };
 }
 
