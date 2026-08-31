@@ -35,6 +35,11 @@ export const MEAL_SLOTS = [
     label: "Sunday Evening",
     options: ["Yam with Palava Sauce", "Plantain with Palava Sauce", "Fried Rice"],
   },
+  {
+    key: "mealMondaybrunch",
+    label: "Monday Brunch",
+    options: ["Jollof with Grilled Chicken"],
+  },
 ] as const;
 
 export type MealSlotKey = (typeof MEAL_SLOTS)[number]["key"];
