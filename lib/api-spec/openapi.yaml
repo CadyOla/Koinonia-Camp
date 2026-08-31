@@ -209,6 +209,18 @@ components:
           type: ["string", "null"]
         paymentSmsSentAt:
           type: ["string", "null"]
+        mealFridayEvening:
+          type: ["string", "null"]
+        mealSaturdayAfternoon:
+          type: ["string", "null"]
+        mealSaturdayEvening:
+          type: ["string", "null"]
+        mealSundayAfternoon:
+          type: ["string", "null"]
+        mealSundayEvening:
+          type: ["string", "null"]
+        mealSelectionsSubmittedAt:
+          type: ["string", "null"]
         createdAt:
           type: string
         updatedAt:
@@ -286,6 +298,9 @@ components:
         - successfullyRegistered
         - successfullyRegisteredResident
         - successfullyRegisteredNonResident
+        - mealSelectionsEligible
+        - mealSelectionsSubmitted
+        - mealBreakdown
         - byBranch
         - byMinistry
       properties:
@@ -315,11 +330,34 @@ components:
         successfullyRegisteredNonResident:
           type: integer
           description: Non-Residents included in successfullyRegistered.
+        mealSelectionsEligible:
+          type: integer
+          description: Total Church Feeding registrants (eligible to select meals).
+        mealSelectionsSubmitted:
+          type: integer
+          description: Church Feeding registrants who have submitted their 5 meal choices.
+        mealBreakdown:
+          type: array
+          items:
+            $ref: "#/components/schemas/MealSlotBreakdown"
         byBranch:
           type: array
           items:
             $ref: "#/components/schemas/CountByLabel"
         byMinistry:
+          type: array
+          items:
+            $ref: "#/components/schemas/CountByLabel"
+
+    MealSlotBreakdown:
+      type: object
+      required:
+        - slot
+        - counts
+      properties:
+        slot:
+          type: string
+        counts:
           type: array
           items:
             $ref: "#/components/schemas/CountByLabel"
