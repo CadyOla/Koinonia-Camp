@@ -3,6 +3,7 @@ import { requireAdmin } from "./admin-auth";
 import { sendRegistrationSms } from "../lib/arkesel";
 import { eq, and, ilike, or, sql } from "drizzle-orm";
 import { db, registrationsTable } from "@workspace/db";
+import { MEAL_SLOTS } from "../lib/meal-menu";
 import {
   ListRegistrationsQueryParams,
   SubmitRegistrationBody,
@@ -31,6 +32,9 @@ function toApiRegistration(row: typeof registrationsTable.$inferSelect) {
     roomSmsSentAt: row.roomSmsSentAt ? row.roomSmsSentAt.toISOString() : null,
     paymentSmsSentAt: row.paymentSmsSentAt
       ? row.paymentSmsSentAt.toISOString()
+      : null,
+    mealSelectionsSubmittedAt: row.mealSelectionsSubmittedAt
+      ? row.mealSelectionsSubmittedAt.toISOString()
       : null,
   };
 }
@@ -243,6 +247,32 @@ router.get(
     const successfullyRegistered =
       successfullyRegisteredResident + successfullyRegisteredNonResident;
 
+    // Meal selections: only Church Feeding registrants are eligible, and
+    // only fully-submitted selections count toward the breakdown (a
+    // submission is all-or-nothing, so there's no partial state to worry
+    // about — see meal-selection.ts).
+    const churchFeedingRows = rows.filter(
+      (r) => r.feedingPreference === "Church Feeding",
+    );
+    const mealSelectionsEligible = churchFeedingRows.length;
+    const submittedMealRows = churchFeedingRows.filter(
+      (r) => r.mealSelectionsSubmittedAt,
+    );
+    const mealSelectionsSubmitted = submittedMealRows.length;
+
+    const mealBreakdown = MEAL_SLOTS.map((slot) => {
+      const optionMap = new Map<string, number>();
+      for (const r of submittedMealRows) {
+        const choice = (r as any)[slot.key] as string | null;
+        if (!choice) continue;
+        optionMap.set(choice, (optionMap.get(choice) ?? 0) + 1);
+      }
+      const counts = Array.from(optionMap.entries())
+        .map(([label, count]) => ({ label, count }))
+        .sort((a, b) => b.count - a.count);
+      return { slot: slot.label, counts };
+    });
+
     // Branch breakdown
     const branchMap = new Map<string, number>();
     for (const r of rows) {
@@ -275,6 +305,9 @@ router.get(
       successfullyRegistered,
       successfullyRegisteredResident,
       successfullyRegisteredNonResident,
+      mealSelectionsEligible,
+      mealSelectionsSubmitted,
+      mealBreakdown,
       byBranch,
       byMinistry,
     };
