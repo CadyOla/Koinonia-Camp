@@ -32,6 +32,15 @@ export const registrationsTable = pgTable("registrations", {
   roomSmsSentAt: timestamp("room_sms_sent_at", { withTimezone: true }),
   // --- Payment reminder SMS tracking for Non-Residents (internal only) ---
   paymentSmsSentAt: timestamp("payment_sms_sent_at", { withTimezone: true }),
+  // --- Meal selection (Church Feeding only), self-service via /my-registration ---
+  mealFridayEvening: text("meal_friday_evening"),
+  mealSaturdayAfternoon: text("meal_saturday_afternoon"),
+  mealSaturdayEvening: text("meal_saturday_evening"),
+  mealSundayAfternoon: text("meal_sunday_afternoon"),
+  mealSundayEvening: text("meal_sunday_evening"),
+  mealSelectionsSubmittedAt: timestamp("meal_selections_submitted_at", {
+    withTimezone: true,
+  }),
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),
