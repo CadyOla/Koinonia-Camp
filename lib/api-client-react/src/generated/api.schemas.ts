@@ -49,6 +49,20 @@ export interface Registration {
   roomSmsSentAt?: string | null;
   /** @nullable */
   paymentSmsSentAt?: string | null;
+  /** @nullable */
+  mealFridayEvening?: string | null;
+  /** @nullable */
+  mealSaturdayAfternoon?: string | null;
+  /** @nullable */
+  mealSaturdayEvening?: string | null;
+  /** @nullable */
+  mealSundayAfternoon?: string | null;
+  /** @nullable */
+  mealSundayEvening?: string | null;
+  /** @nullable */
+  mealMondayBrunch?: string | null;
+  /** @nullable */
+  mealSelectionsSubmittedAt?: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -90,6 +104,11 @@ export interface CountByLabel {
   count: number;
 }
 
+export interface MealSlotBreakdown {
+  slot: string;
+  counts: CountByLabel[];
+}
+
 export interface RegistrationStats {
   total: number;
   resident: number;
@@ -104,6 +123,11 @@ export interface RegistrationStats {
   successfullyRegisteredResident: number;
   /** Non-Residents included in successfullyRegistered. */
   successfullyRegisteredNonResident: number;
+  /** Total Church Feeding registrants (eligible to select meals). */
+  mealSelectionsEligible: number;
+  /** Church Feeding registrants who have submitted their 5 meal choices. */
+  mealSelectionsSubmitted: number;
+  mealBreakdown: MealSlotBreakdown[];
   byBranch: CountByLabel[];
   byMinistry: CountByLabel[];
 }

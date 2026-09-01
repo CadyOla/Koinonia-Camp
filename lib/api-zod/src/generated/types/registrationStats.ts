@@ -6,6 +6,7 @@
  * OpenAPI spec version: 0.1.0
  */
 import type { CountByLabel } from './countByLabel';
+import type { MealSlotBreakdown } from './mealSlotBreakdown';
 
 export interface RegistrationStats {
   total: number;
@@ -21,6 +22,11 @@ export interface RegistrationStats {
   successfullyRegisteredResident: number;
   /** Non-Residents included in successfullyRegistered. */
   successfullyRegisteredNonResident: number;
+  /** Total Church Feeding registrants (eligible to select meals). */
+  mealSelectionsEligible: number;
+  /** Church Feeding registrants who have submitted their 5 meal choices. */
+  mealSelectionsSubmitted: number;
+  mealBreakdown: MealSlotBreakdown[];
   byBranch: CountByLabel[];
   byMinistry: CountByLabel[];
 }

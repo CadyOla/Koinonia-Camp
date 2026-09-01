@@ -55,6 +55,13 @@ export const ListRegistrationsResponseItem = zod.object({
   "hqSyncedAt": zod.string().nullish(),
   "roomSmsSentAt": zod.string().nullish(),
   "paymentSmsSentAt": zod.string().nullish(),
+  "mealFridayEvening": zod.string().nullish(),
+  "mealSaturdayAfternoon": zod.string().nullish(),
+  "mealSaturdayEvening": zod.string().nullish(),
+  "mealSundayAfternoon": zod.string().nullish(),
+  "mealSundayEvening": zod.string().nullish(),
+  "mealMondayBrunch": zod.string().nullish(),
+  "mealSelectionsSubmittedAt": zod.string().nullish(),
   "createdAt": zod.string(),
   "updatedAt": zod.string()
 })
@@ -117,6 +124,13 @@ export const SubmitRegistrationResponse = zod.object({
   "hqSyncedAt": zod.string().nullish(),
   "roomSmsSentAt": zod.string().nullish(),
   "paymentSmsSentAt": zod.string().nullish(),
+  "mealFridayEvening": zod.string().nullish(),
+  "mealSaturdayAfternoon": zod.string().nullish(),
+  "mealSaturdayEvening": zod.string().nullish(),
+  "mealSundayAfternoon": zod.string().nullish(),
+  "mealSundayEvening": zod.string().nullish(),
+  "mealMondayBrunch": zod.string().nullish(),
+  "mealSelectionsSubmittedAt": zod.string().nullish(),
   "createdAt": zod.string(),
   "updatedAt": zod.string()
 })
@@ -136,6 +150,15 @@ export const GetRegistrationStatsResponse = zod.object({
   "successfullyRegistered": zod.number().describe('Count of registrants who have paid the GHS100 fee — for Residents, this also requires a synced room assignment; for Non-Residents, a completed payment alone counts.\n'),
   "successfullyRegisteredResident": zod.number().describe('Residents included in successfullyRegistered.'),
   "successfullyRegisteredNonResident": zod.number().describe('Non-Residents included in successfullyRegistered.'),
+  "mealSelectionsEligible": zod.number().describe('Total Church Feeding registrants (eligible to select meals).'),
+  "mealSelectionsSubmitted": zod.number().describe('Church Feeding registrants who have submitted their 5 meal choices.'),
+  "mealBreakdown": zod.array(zod.object({
+  "slot": zod.string(),
+  "counts": zod.array(zod.object({
+  "label": zod.string(),
+  "count": zod.number()
+}))
+})),
   "byBranch": zod.array(zod.object({
   "label": zod.string(),
   "count": zod.number()
@@ -181,6 +204,13 @@ export const GetRegistrationResponse = zod.object({
   "hqSyncedAt": zod.string().nullish(),
   "roomSmsSentAt": zod.string().nullish(),
   "paymentSmsSentAt": zod.string().nullish(),
+  "mealFridayEvening": zod.string().nullish(),
+  "mealSaturdayAfternoon": zod.string().nullish(),
+  "mealSaturdayEvening": zod.string().nullish(),
+  "mealSundayAfternoon": zod.string().nullish(),
+  "mealSundayEvening": zod.string().nullish(),
+  "mealMondayBrunch": zod.string().nullish(),
+  "mealSelectionsSubmittedAt": zod.string().nullish(),
   "createdAt": zod.string(),
   "updatedAt": zod.string()
 })

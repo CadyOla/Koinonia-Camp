@@ -46,6 +46,20 @@ export interface Registration {
   roomSmsSentAt?: string | null;
   /** @nullable */
   paymentSmsSentAt?: string | null;
+  /** @nullable */
+  mealFridayEvening?: string | null;
+  /** @nullable */
+  mealSaturdayAfternoon?: string | null;
+  /** @nullable */
+  mealSaturdayEvening?: string | null;
+  /** @nullable */
+  mealSundayAfternoon?: string | null;
+  /** @nullable */
+  mealSundayEvening?: string | null;
+  /** @nullable */
+  mealMondayBrunch?: string | null;
+  /** @nullable */
+  mealSelectionsSubmittedAt?: string | null;
   createdAt: string;
   updatedAt: string;
 }
