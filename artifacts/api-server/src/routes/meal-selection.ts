@@ -76,13 +76,15 @@ router.post(
       .where(eq(registrationsTable.id, row.id))
       .returning();
 
+    const responseMeals: Record<string, string | null> = {};
+    for (const slot of MEAL_SLOTS) {
+      responseMeals[slot.key] = (updated as Record<string, unknown>)[slot.key] as
+        | string
+        | null;
+    }
+
     res.json({
-      mealFridayEvening: updated.mealFridayEvening,
-      mealSaturdayAfternoon: updated.mealSaturdayAfternoon,
-      mealSaturdayEvening: updated.mealSaturdayEvening,
-      mealSundayAfternoon: updated.mealSundayAfternoon,
-      mealSundayEvening: updated.mealSundayEvening,
-      mealMondayBrunch: updated.mealMondayBrunch,
+      ...responseMeals,
       mealSelectionsSubmittedAt: updated.mealSelectionsSubmittedAt?.toISOString() ?? null,
     });
   },
