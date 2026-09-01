@@ -219,6 +219,8 @@ components:
           type: ["string", "null"]
         mealSundayEvening:
           type: ["string", "null"]
+        mealMondayBrunch:
+          type: ["string", "null"]
         mealSelectionsSubmittedAt:
           type: ["string", "null"]
         createdAt:
