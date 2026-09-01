@@ -28,6 +28,28 @@ function toApiRegistration(row: typeof registrationsTable.$inferSelect) {
     mealSelectionsSubmittedAt: row.mealSelectionsSubmittedAt
       ? row.mealSelectionsSubmittedAt.toISOString()
       : null,
+    // Meal-collection tracking (food-collection ticketing) — explicit
+    // conversion per the 7.10 lesson: any Drizzle timestamp exposed via the
+    // API must be converted here, not spread raw, in case a validator is
+    // ever added to this route.
+    mealFridayEveningCollectedAt: row.mealFridayEveningCollectedAt
+      ? row.mealFridayEveningCollectedAt.toISOString()
+      : null,
+    mealSaturdayAfternoonCollectedAt: row.mealSaturdayAfternoonCollectedAt
+      ? row.mealSaturdayAfternoonCollectedAt.toISOString()
+      : null,
+    mealSaturdayEveningCollectedAt: row.mealSaturdayEveningCollectedAt
+      ? row.mealSaturdayEveningCollectedAt.toISOString()
+      : null,
+    mealSundayAfternoonCollectedAt: row.mealSundayAfternoonCollectedAt
+      ? row.mealSundayAfternoonCollectedAt.toISOString()
+      : null,
+    mealSundayEveningCollectedAt: row.mealSundayEveningCollectedAt
+      ? row.mealSundayEveningCollectedAt.toISOString()
+      : null,
+    mealMondayBrunchCollectedAt: row.mealMondayBrunchCollectedAt
+      ? row.mealMondayBrunchCollectedAt.toISOString()
+      : null,
   };
 }
 
@@ -40,25 +62,21 @@ router.get(
     // hits the DB rather than a cached response — stale cached data here
     // would show someone an outdated room/payment status.
     res.set("Cache-Control", "no-store");
-
     const raw = req.params.referenceNumber?.trim().toUpperCase();
     if (!raw) {
       res.status(400).json({ error: "Reference number is required" });
       return;
     }
-
     const [row] = await db
       .select()
       .from(registrationsTable)
       .where(sql`upper(${registrationsTable.referenceNumber}) = ${raw}`);
-
     if (!row) {
       res
         .status(404)
         .json({ error: "No registration found with that reference number" });
       return;
     }
-
     res.json(toApiRegistration(row));
   },
 );
