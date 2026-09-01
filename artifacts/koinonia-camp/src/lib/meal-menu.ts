@@ -2,7 +2,6 @@
 // frontend (src/pages/my-registration.tsx) copies of this file identical —
 // the backend validates submissions against these exact option strings, so
 // a mismatch would cause valid-looking selections to be rejected.
-
 export const MEAL_SLOTS = [
   {
     key: "mealFridayEvening",
