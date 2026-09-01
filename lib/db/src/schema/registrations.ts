@@ -38,6 +38,7 @@ export const registrationsTable = pgTable("registrations", {
   mealSaturdayEvening: text("meal_saturday_evening"),
   mealSundayAfternoon: text("meal_sunday_afternoon"),
   mealSundayEvening: text("meal_sunday_evening"),
+  mealMondayBrunch: text("meal_monday_brunch"),
   mealSelectionsSubmittedAt: timestamp("meal_selections_submitted_at", {
     withTimezone: true,
   }),
