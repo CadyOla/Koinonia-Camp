@@ -42,6 +42,30 @@ export const registrationsTable = pgTable("registrations", {
   mealSelectionsSubmittedAt: timestamp("meal_selections_submitted_at", {
     withTimezone: true,
   }),
+  // --- Food-collection ticketing: admin/volunteer marks a meal as handed
+  // out. These were missing from the DB despite being referenced in code —
+  // this is the fix for that mismatch. ---
+  mealFridayEveningCollectedAt: timestamp("meal_friday_evening_collected_at", {
+    withTimezone: true,
+  }),
+  mealSaturdayAfternoonCollectedAt: timestamp(
+    "meal_saturday_afternoon_collected_at",
+    { withTimezone: true },
+  ),
+  mealSaturdayEveningCollectedAt: timestamp(
+    "meal_saturday_evening_collected_at",
+    { withTimezone: true },
+  ),
+  mealSundayAfternoonCollectedAt: timestamp(
+    "meal_sunday_afternoon_collected_at",
+    { withTimezone: true },
+  ),
+  mealSundayEveningCollectedAt: timestamp("meal_sunday_evening_collected_at", {
+    withTimezone: true,
+  }),
+  mealMondayBrunchCollectedAt: timestamp("meal_monday_brunch_collected_at", {
+    withTimezone: true,
+  }),
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),
