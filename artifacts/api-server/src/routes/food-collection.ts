@@ -102,6 +102,12 @@ router.post(
     const raw = req.params.referenceNumber?.trim();
     const { slot, collected } = req.body ?? {};
 
+    // TEMPORARY DEBUG LOGGING — remove once the bug is found.
+    req.log.info(
+      { raw, slot, collected, collectedType: typeof collected },
+      "[food-debug] incoming collect request",
+    );
+
     if (!raw) {
       res.status(400).json({ error: "Reference number is required" });
       return;
@@ -122,21 +128,29 @@ router.post(
     }
 
     const columnKey = COLLECTED_COLUMN[validSlot.key];
-    // `as any` here is deliberate: Drizzle's typed .set() doesn't have a
-    // clean way to accept a dynamically computed column key, and the more
-    // "correct"-looking `as Partial<RegistrationRow>` cast actually fails
-    // TypeScript's compiler (the object literal's inferred type doesn't
-    // sufficiently overlap with Partial<RegistrationRow>), which silently
-    // broke the last deploy — Render kept serving the previous build
-    // instead of failing visibly. `as any` sidesteps that safely since the
-    // key is already validated against COLLECTED_COLUMN above.
+
+    // TEMPORARY DEBUG LOGGING
+    req.log.info(
+      { columnKey, rowId: row.id, beforeValue: row[columnKey] },
+      "[food-debug] resolved column and row before update",
+    );
+
     const updateValues = { [columnKey]: collected ? new Date() : null } as any;
+
+    // TEMPORARY DEBUG LOGGING
+    req.log.info({ updateValues }, "[food-debug] update payload about to run");
 
     const [updated] = await db
       .update(registrationsTable)
       .set(updateValues)
       .where(eq(registrationsTable.id, row.id))
       .returning();
+
+    // TEMPORARY DEBUG LOGGING
+    req.log.info(
+      { afterValue: updated[columnKey], updatedRowId: updated.id },
+      "[food-debug] value immediately after update",
+    );
 
     res.json({
       referenceNumber: updated.referenceNumber,
