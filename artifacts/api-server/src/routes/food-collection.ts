@@ -122,9 +122,19 @@ router.post(
     }
 
     const columnKey = COLLECTED_COLUMN[validSlot.key];
+    // `as any` here is deliberate: Drizzle's typed .set() doesn't have a
+    // clean way to accept a dynamically computed column key, and the more
+    // "correct"-looking `as Partial<RegistrationRow>` cast actually fails
+    // TypeScript's compiler (the object literal's inferred type doesn't
+    // sufficiently overlap with Partial<RegistrationRow>), which silently
+    // broke the last deploy — Render kept serving the previous build
+    // instead of failing visibly. `as any` sidesteps that safely since the
+    // key is already validated against COLLECTED_COLUMN above.
+    const updateValues = { [columnKey]: collected ? new Date() : null } as any;
+
     const [updated] = await db
       .update(registrationsTable)
-      .set({ [columnKey]: collected ? new Date() : null } as Partial<RegistrationRow>)
+      .set(updateValues)
       .where(eq(registrationsTable.id, row.id))
       .returning();
 
