@@ -102,12 +102,6 @@ router.post(
     const raw = req.params.referenceNumber?.trim();
     const { slot, collected } = req.body ?? {};
 
-    // TEMPORARY DEBUG LOGGING — remove once the bug is found.
-    req.log.info(
-      { raw, slot, collected, collectedType: typeof collected },
-      "[food-debug] incoming collect request",
-    );
-
     if (!raw) {
       res.status(400).json({ error: "Reference number is required" });
       return;
@@ -128,29 +122,13 @@ router.post(
     }
 
     const columnKey = COLLECTED_COLUMN[validSlot.key];
-
-    // TEMPORARY DEBUG LOGGING
-    req.log.info(
-      { columnKey, rowId: row.id, beforeValue: row[columnKey] },
-      "[food-debug] resolved column and row before update",
-    );
-
     const updateValues = { [columnKey]: collected ? new Date() : null } as any;
-
-    // TEMPORARY DEBUG LOGGING
-    req.log.info({ updateValues }, "[food-debug] update payload about to run");
 
     const [updated] = await db
       .update(registrationsTable)
       .set(updateValues)
       .where(eq(registrationsTable.id, row.id))
       .returning();
-
-    // TEMPORARY DEBUG LOGGING
-    req.log.info(
-      { afterValue: updated[columnKey], updatedRowId: updated.id },
-      "[food-debug] value immediately after update",
-    );
 
     res.json({
       referenceNumber: updated.referenceNumber,
