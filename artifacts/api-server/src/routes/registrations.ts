@@ -36,6 +36,24 @@ function toApiRegistration(row: typeof registrationsTable.$inferSelect) {
     mealSelectionsSubmittedAt: row.mealSelectionsSubmittedAt
       ? row.mealSelectionsSubmittedAt.toISOString()
       : null,
+    mealFridayEveningCollectedAt: row.mealFridayEveningCollectedAt
+      ? row.mealFridayEveningCollectedAt.toISOString()
+      : null,
+    mealSaturdayAfternoonCollectedAt: row.mealSaturdayAfternoonCollectedAt
+      ? row.mealSaturdayAfternoonCollectedAt.toISOString()
+      : null,
+    mealSaturdayEveningCollectedAt: row.mealSaturdayEveningCollectedAt
+      ? row.mealSaturdayEveningCollectedAt.toISOString()
+      : null,
+    mealSundayAfternoonCollectedAt: row.mealSundayAfternoonCollectedAt
+      ? row.mealSundayAfternoonCollectedAt.toISOString()
+      : null,
+    mealSundayEveningCollectedAt: row.mealSundayEveningCollectedAt
+      ? row.mealSundayEveningCollectedAt.toISOString()
+      : null,
+    mealMondayBrunchCollectedAt: row.mealMondayBrunchCollectedAt
+      ? row.mealMondayBrunchCollectedAt.toISOString()
+      : null,
   };
 }
 
@@ -247,6 +265,21 @@ router.get(
     const successfullyRegistered =
       successfullyRegisteredResident + successfullyRegisteredNonResident;
 
+    // Explains the gap between "matched/updated" (HQ sync) and
+    // "successfully registered": Residents who've paid but haven't picked
+    // an actual room yet (HQ's accommodation field still blank for them).
+    const needsRoomAssignment = rows
+      .filter(
+        (r) =>
+          r.accommodationPreference === "Resident" &&
+          r.paymentStatus?.toLowerCase() === "completed" &&
+          !r.roomAssignment,
+      )
+      .map((r) => ({
+        referenceNumber: r.referenceNumber,
+        fullName: r.fullName,
+      }));
+
     // Meal selections: only Church Feeding registrants are eligible, and
     // only fully-submitted selections count toward the breakdown (a
     // submission is all-or-nothing, so there's no partial state to worry
@@ -305,6 +338,7 @@ router.get(
       successfullyRegistered,
       successfullyRegisteredResident,
       successfullyRegisteredNonResident,
+      needsRoomAssignment,
       mealSelectionsEligible,
       mealSelectionsSubmitted,
       mealBreakdown,
