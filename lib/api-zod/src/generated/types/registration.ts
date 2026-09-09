@@ -60,6 +60,18 @@ export interface Registration {
   mealMondayBrunch?: string | null;
   /** @nullable */
   mealSelectionsSubmittedAt?: string | null;
+  /** @nullable */
+  mealFridayEveningCollectedAt?: string | null;
+  /** @nullable */
+  mealSaturdayAfternoonCollectedAt?: string | null;
+  /** @nullable */
+  mealSaturdayEveningCollectedAt?: string | null;
+  /** @nullable */
+  mealSundayAfternoonCollectedAt?: string | null;
+  /** @nullable */
+  mealSundayEveningCollectedAt?: string | null;
+  /** @nullable */
+  mealMondayBrunchCollectedAt?: string | null;
   createdAt: string;
   updatedAt: string;
 }

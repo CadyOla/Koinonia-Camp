@@ -63,6 +63,18 @@ export interface Registration {
   mealMondayBrunch?: string | null;
   /** @nullable */
   mealSelectionsSubmittedAt?: string | null;
+  /** @nullable */
+  mealFridayEveningCollectedAt?: string | null;
+  /** @nullable */
+  mealSaturdayAfternoonCollectedAt?: string | null;
+  /** @nullable */
+  mealSaturdayEveningCollectedAt?: string | null;
+  /** @nullable */
+  mealSundayAfternoonCollectedAt?: string | null;
+  /** @nullable */
+  mealSundayEveningCollectedAt?: string | null;
+  /** @nullable */
+  mealMondayBrunchCollectedAt?: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -99,6 +111,11 @@ export interface RegistrationInput {
   ageCategory: RegistrationInputAgeCategory;
 }
 
+export interface RegistrantRef {
+  referenceNumber: string;
+  fullName: string;
+}
+
 export interface CountByLabel {
   label: string;
   count: number;
@@ -123,6 +140,8 @@ export interface RegistrationStats {
   successfullyRegisteredResident: number;
   /** Non-Residents included in successfullyRegistered. */
   successfullyRegisteredNonResident: number;
+  /** Residents who have paid but have no synced room yet — explains any gap between HQ sync's "matched" count and successfullyRegistered. */
+  needsRoomAssignment: RegistrantRef[];
   /** Total Church Feeding registrants (eligible to select meals). */
   mealSelectionsEligible: number;
   /** Church Feeding registrants who have submitted their 5 meal choices. */

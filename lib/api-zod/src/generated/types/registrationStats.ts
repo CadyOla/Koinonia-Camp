@@ -7,6 +7,7 @@
  */
 import type { CountByLabel } from './countByLabel';
 import type { MealSlotBreakdown } from './mealSlotBreakdown';
+import type { RegistrantRef } from './registrantRef';
 
 export interface RegistrationStats {
   total: number;
@@ -22,6 +23,8 @@ export interface RegistrationStats {
   successfullyRegisteredResident: number;
   /** Non-Residents included in successfullyRegistered. */
   successfullyRegisteredNonResident: number;
+  /** Residents who have paid but have no synced room yet — explains any gap between HQ sync's "matched" count and successfullyRegistered. */
+  needsRoomAssignment: RegistrantRef[];
   /** Total Church Feeding registrants (eligible to select meals). */
   mealSelectionsEligible: number;
   /** Church Feeding registrants who have submitted their 5 meal choices. */

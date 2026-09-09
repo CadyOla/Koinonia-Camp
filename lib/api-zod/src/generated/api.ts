@@ -62,6 +62,12 @@ export const ListRegistrationsResponseItem = zod.object({
   "mealSundayEvening": zod.string().nullish(),
   "mealMondayBrunch": zod.string().nullish(),
   "mealSelectionsSubmittedAt": zod.string().nullish(),
+  "mealFridayEveningCollectedAt": zod.string().nullish(),
+  "mealSaturdayAfternoonCollectedAt": zod.string().nullish(),
+  "mealSaturdayEveningCollectedAt": zod.string().nullish(),
+  "mealSundayAfternoonCollectedAt": zod.string().nullish(),
+  "mealSundayEveningCollectedAt": zod.string().nullish(),
+  "mealMondayBrunchCollectedAt": zod.string().nullish(),
   "createdAt": zod.string(),
   "updatedAt": zod.string()
 })
@@ -131,6 +137,12 @@ export const SubmitRegistrationResponse = zod.object({
   "mealSundayEvening": zod.string().nullish(),
   "mealMondayBrunch": zod.string().nullish(),
   "mealSelectionsSubmittedAt": zod.string().nullish(),
+  "mealFridayEveningCollectedAt": zod.string().nullish(),
+  "mealSaturdayAfternoonCollectedAt": zod.string().nullish(),
+  "mealSaturdayEveningCollectedAt": zod.string().nullish(),
+  "mealSundayAfternoonCollectedAt": zod.string().nullish(),
+  "mealSundayEveningCollectedAt": zod.string().nullish(),
+  "mealMondayBrunchCollectedAt": zod.string().nullish(),
   "createdAt": zod.string(),
   "updatedAt": zod.string()
 })
@@ -150,6 +162,10 @@ export const GetRegistrationStatsResponse = zod.object({
   "successfullyRegistered": zod.number().describe('Count of registrants who have paid the GHS100 fee — for Residents, this also requires a synced room assignment; for Non-Residents, a completed payment alone counts.\n'),
   "successfullyRegisteredResident": zod.number().describe('Residents included in successfullyRegistered.'),
   "successfullyRegisteredNonResident": zod.number().describe('Non-Residents included in successfullyRegistered.'),
+  "needsRoomAssignment": zod.array(zod.object({
+  "referenceNumber": zod.string(),
+  "fullName": zod.string()
+})).describe('Residents who have paid but have no synced room yet — explains any gap between HQ sync\'s \"matched\" count and successfullyRegistered.\n'),
   "mealSelectionsEligible": zod.number().describe('Total Church Feeding registrants (eligible to select meals).'),
   "mealSelectionsSubmitted": zod.number().describe('Church Feeding registrants who have submitted their 5 meal choices.'),
   "mealBreakdown": zod.array(zod.object({
@@ -211,6 +227,12 @@ export const GetRegistrationResponse = zod.object({
   "mealSundayEvening": zod.string().nullish(),
   "mealMondayBrunch": zod.string().nullish(),
   "mealSelectionsSubmittedAt": zod.string().nullish(),
+  "mealFridayEveningCollectedAt": zod.string().nullish(),
+  "mealSaturdayAfternoonCollectedAt": zod.string().nullish(),
+  "mealSaturdayEveningCollectedAt": zod.string().nullish(),
+  "mealSundayAfternoonCollectedAt": zod.string().nullish(),
+  "mealSundayEveningCollectedAt": zod.string().nullish(),
+  "mealMondayBrunchCollectedAt": zod.string().nullish(),
   "createdAt": zod.string(),
   "updatedAt": zod.string()
 })

@@ -11,6 +11,7 @@ export * from './errorResponse';
 export * from './healthStatus';
 export * from './listRegistrationsParams';
 export * from './mealSlotBreakdown';
+export * from './registrantRef';
 export * from './registration';
 export * from './registrationInput';
 export * from './registrationInputAgeCategory';
