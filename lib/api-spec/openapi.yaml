@@ -223,6 +223,18 @@ components:
           type: ["string", "null"]
         mealSelectionsSubmittedAt:
           type: ["string", "null"]
+        mealFridayEveningCollectedAt:
+          type: ["string", "null"]
+        mealSaturdayAfternoonCollectedAt:
+          type: ["string", "null"]
+        mealSaturdayEveningCollectedAt:
+          type: ["string", "null"]
+        mealSundayAfternoonCollectedAt:
+          type: ["string", "null"]
+        mealSundayEveningCollectedAt:
+          type: ["string", "null"]
+        mealMondayBrunchCollectedAt:
+          type: ["string", "null"]
         createdAt:
           type: string
         updatedAt:
@@ -300,6 +312,7 @@ components:
         - successfullyRegistered
         - successfullyRegisteredResident
         - successfullyRegisteredNonResident
+        - needsRoomAssignment
         - mealSelectionsEligible
         - mealSelectionsSubmitted
         - mealBreakdown
@@ -332,6 +345,14 @@ components:
         successfullyRegisteredNonResident:
           type: integer
           description: Non-Residents included in successfullyRegistered.
+        needsRoomAssignment:
+          type: array
+          description: >
+            Residents who have paid but have no synced room yet — explains
+            any gap between HQ sync's "matched" count and
+            successfullyRegistered.
+          items:
+            $ref: "#/components/schemas/RegistrantRef"
         mealSelectionsEligible:
           type: integer
           description: Total Church Feeding registrants (eligible to select meals).
@@ -363,6 +384,17 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/CountByLabel"
+
+    RegistrantRef:
+      type: object
+      required:
+        - referenceNumber
+        - fullName
+      properties:
+        referenceNumber:
+          type: string
+        fullName:
+          type: string
 
     CountByLabel:
       type: object
