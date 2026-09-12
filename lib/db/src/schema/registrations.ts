@@ -42,9 +42,7 @@ export const registrationsTable = pgTable("registrations", {
   mealSelectionsSubmittedAt: timestamp("meal_selections_submitted_at", {
     withTimezone: true,
   }),
-  // --- Food-collection ticketing: admin/volunteer marks a meal as handed
-  // out. These were missing from the DB despite being referenced in code —
-  // this is the fix for that mismatch. ---
+  // --- Food-collection ticketing: admin marks a meal as handed out ---
   mealFridayEveningCollectedAt: timestamp("meal_friday_evening_collected_at", {
     withTimezone: true,
   }),
@@ -64,6 +62,13 @@ export const registrationsTable = pgTable("registrations", {
     withTimezone: true,
   }),
   mealMondayBrunchCollectedAt: timestamp("meal_monday_brunch_collected_at", {
+    withTimezone: true,
+  }),
+  // --- Manual override lock: once set, HQ sync stops touching
+  // accommodationPreference and roomAssignment for this row (other fields
+  // like paymentStatus/hqBookingId still sync normally). Set/cleared by
+  // hand alongside a manual Supabase edit to those two fields. ---
+  accommodationOverrideAt: timestamp("accommodation_override_at", {
     withTimezone: true,
   }),
   createdAt: timestamp("created_at", { withTimezone: true })
