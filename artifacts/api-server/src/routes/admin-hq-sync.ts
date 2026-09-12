@@ -175,6 +175,7 @@ router.post(
       let matched = 0;
       let updated = 0;
       let reassigned = 0;
+      let locked = 0;
       const unmatched: string[] = [];
 
       for (const hqReg of hqRegistrations) {
@@ -199,12 +200,27 @@ router.post(
         const paymentStatus = extractHqPaymentStatus(hqReg);
         const bookingId = extractHqBookingId(hqReg);
         const hqAccommodationType = extractHqAccommodationType(hqReg);
+        const isLocked = Boolean(localRow.accommodationOverrideAt);
 
         const updateSet: Partial<typeof registrationsTable.$inferInsert> = {
           hqSyncedAt: new Date(),
         };
         if (paymentStatus) updateSet.paymentStatus = paymentStatus;
         if (bookingId) updateSet.hqBookingId = bookingId;
+
+        if (isLocked) {
+          // A manual correction was made in Supabase to accommodationPreference
+          // and/or roomAssignment for this person — leave both alone
+          // regardless of what HQ says, until the lock is cleared by hand.
+          await db
+            .update(registrationsTable)
+            .set(updateSet)
+            .where(eq(registrationsTable.id, localRow.id));
+
+          updated++;
+          locked++;
+          continue;
+        }
 
         // If HQ's actual ticket type disagrees with what was originally
         // selected here (e.g. registered as Resident, switched to
@@ -250,6 +266,7 @@ router.post(
           matched,
           updated,
           reassigned,
+          locked,
           unmatchedCount: unmatched.length,
         },
         "HQ registration sync complete",
@@ -260,6 +277,7 @@ router.post(
         matched,
         updated,
         reassigned,
+        locked,
         unmatched,
       });
     } catch (err: any) {
