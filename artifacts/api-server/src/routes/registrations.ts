@@ -4,6 +4,7 @@ import { sendRegistrationSms } from "../lib/arkesel";
 import { eq, and, ilike, or, sql } from "drizzle-orm";
 import { db, registrationsTable } from "@workspace/db";
 import { MEAL_SLOTS } from "../lib/meal-menu";
+import { registrationsOpen, CLOSED_MESSAGE } from "./registration-status";
 import {
   ListRegistrationsQueryParams,
   SubmitRegistrationBody,
@@ -106,6 +107,11 @@ router.get("/registrations", requireAdmin, async (req, res): Promise<void> => {
 
 // POST /registrations — upsert by (fullName, phoneNumber)
 router.post("/registrations", async (req, res): Promise<void> => {
+  if (!registrationsOpen()) {
+    res.status(403).json({ error: CLOSED_MESSAGE });
+    return;
+  }
+
   const parsed = SubmitRegistrationBody.safeParse(req.body);
   if (!parsed.success) {
     req.log.warn({ errors: parsed.error.message }, "Invalid registration body");
